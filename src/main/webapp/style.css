@@ -66,3 +66,17 @@ h3 {
 	font-size:24pt;
 	color:#092E67;
 }
+label {
+	display: block;
+	width: 500px;
+}
+label span {
+	width: 200px;
+}
+label>* {
+	float: left;
+}
+div.buttons {
+	padding-top: 20px;
+	clear: both;
+}

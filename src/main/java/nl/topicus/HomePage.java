@@ -1,59 +1,61 @@
 package nl.topicus;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.Serializable;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.SubmitLink;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.odlabs.wiquery.ui.selectable.SelectableBehavior;
-import org.odlabs.wiquery.ui.selectable.SelectableBehavior.AjaxSelectionCallback;
 
-public class HomePage extends WebPage {
+public class HomePage extends WebPage
+{
 	private static final long serialVersionUID = 1L;
 
-	public HomePage(final PageParameters parameters) {
+	public static class Bean implements Serializable
+	{
+		private static final long serialVersionUID = 1L;
+
+		private String field1;
+
+		private String field2;
+
+		public String getField1()
+		{
+			return field1;
+		}
+
+		public void setField1(String field1)
+		{
+			this.field1 = field1;
+		}
+
+		public String getField2()
+		{
+			return field2;
+		}
+
+		public void setField2(String field2)
+		{
+			this.field2 = field2;
+		}
+	}
+
+	public HomePage(final PageParameters parameters)
+	{
 		super(parameters);
 
-		List<String> values = Arrays.asList("Value 1", "Value 2", "Value 3",
-				"Value 4", "Value 5");
-		ListView<String> listView = new ListView<String>("listView", values) {
-			private static final long serialVersionUID = 1L;
+		add(new FeedbackPanel("feedback"));
 
-			@Override
-			protected void populateItem(ListItem<String> item) {
-				item.add(new Label("item", item.getModel()));
-				item.setOutputMarkupId(true);
-			}
-		};
+		Form<Bean> form = new Form<>("form", Model.of(new Bean()));
+		add(form);
 
-		SelectableBehavior selectable = new SelectableBehavior() {
-			@Override
-			protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
-				super.updateAjaxAttributes(attributes);
-				attributes.getExtraParameters().put("test", "test");
-			}
-		};
-		selectable.setStopEvent(new AjaxSelectionCallback() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			protected void selection(AjaxRequestTarget target,
-					Component source, List<Component> selectedComponents) {
-				System.out.println(selectedComponents);
-			}
-		});
-		WebMarkupContainer selectableWicket = new WebMarkupContainer(
-				"selectableWicket");
-		selectableWicket.add(selectable);
-		selectableWicket.add(listView);
-		add(selectableWicket);
-
+		form.add(new TextField<>("field1", new PropertyModel<String>(form.getModel(), "field1"))
+			.setRequired(true));
+		form.add(new TextField<>("field2", new PropertyModel<String>(form.getModel(), "field2")));
+		form.add(new SubmitLink("submit", form));
 	}
 }
