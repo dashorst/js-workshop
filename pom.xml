@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>nl.topicus.onderwijs</groupId>
 		<artifactId>onderwijs-parent</artifactId>
-		<version>2012.2.7</version>
+		<version>2012.2.8</version>
 	</parent>
 
 	<groupId>nl.topicus</groupId>
@@ -42,14 +42,23 @@
 	</licenses>
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.wicket</groupId>
-			<artifactId>wicket-core</artifactId>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>1.12</version>
 		</dependency>
 		<dependency>
-			<groupId>org.odlabs.wiquery</groupId>
-			<artifactId>wiquery-jquery-ui</artifactId>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-servlet</artifactId>
+			<version>1.12</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-jaxrs</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-xc</artifactId>
+		</dependency>
 		<!--  JETTY DEPENDENCIES FOR TESTING  -->
 		<dependency>
 			<groupId>org.eclipse.jetty.aggregate</groupId>
