@@ -35,18 +35,25 @@ var d3, jsbots;
 			enterG = robotGs.enter()
 				.append("g")
 				.classed("robot", true)
-				.attr("transform", function(d) {return "translate("+d.x+","+d.y+")";});
-			enterG.append("circle")
-				.attr("r", 30)
-				.style("stroke", function(d) {return d.color;});
-			enterG.append("line")
-				.attr("x1", 0)
-				.attr("y1", 0)
-				.attr("x2", 0)
-				.attr("y2", -40);
+				.attr("transform", function(d) {return "translate("+d.x+","+(900-d.y)+")";});
+			
+			enterG.append("path")
+				.attr("d", "M-64.5-41v89.5l-7,31l27,27c0,0-0.25-7.25,44.833-7.25 c44.417,0,45.167,7.25,45.167,7.25l26-26l-7-31v-93l7-20l-27-27h-90l-26,26l7,20V-41")
+				.style("stroke", function(d) {return d.color;})
+				.attr("transform", "scale(0.4)");
+
+			enterG.append("path")
+				.attr("d", "M-25.435,49.5l-25.769-70.91l25.769-45.09h18.102l4.085-112h6.969 L7.188-66.469L26-66.5l25.87,45.261L26.101,49.5c0,0-19.125,6.5-25.768,6.5S-25.435,49.5-25.435,49.5z")
+				.style("stroke", function(d) {return d.color;})
+				.attr("transform", "scale(0.4)");
+
+			enterG.append("path")
+				.attr("d", "M51.5,67.5h-103v18c0,0,38.57,4.75,51.5,4.75s51.5-4.75,51.5-4.75 V67.5z")
+				.style("stroke", function(d) {return d.color;})
+				.attr("transform", "scale(0.4)");
 			
 			robotGs.attr("transform", function(d) {
-				return "translate("+d.x+","+d.y+") rotate("+d.angle+")";
+				return "translate("+d.x+","+(900-d.y)+") rotate("+d.angle+")";
 			});
 		};
 		
