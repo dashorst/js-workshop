@@ -1,0 +1,54 @@
+@CHARSET "UTF-8";
+
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Oswald Bold'), local('Oswald-Bold'), url(Oswald-Bold.woff) format('woff');
+}
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Oswald Light'), local('Oswald-Light'), url('Oswald-Light.woff') format('woff');
+}
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Oswald'), url('Oswald.woff') format('woff');
+}
+
+html {
+	height: 100%;
+}
+
+body {
+	color: #ddf;
+	font-family: 'Oswald', 'Lucida Sans', 'Arial', 'Helvetica', 'Sans-serif',
+		'sans';
+	font-size: 9pt;
+	line-height: 1.8em;
+	padding: 0;
+	margin: 0;
+	height: 100%;
+	position: relative;
+	overflow: hidden;
+	background: rgb(0, 0, 0);
+}
+
+.arena rect.perimeter {
+	fill: none;
+	stroke-width: 2;
+	stroke: rgba(20, 240, 240, 1);
+	stroke-linejoin: round; 
+}
+
+.robot circle {
+	stroke-width: 2;
+}
+
+.robot line {
+	stroke: white;
+	stroke-width: 2;
+}

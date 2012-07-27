@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>nl.topicus.onderwijs</groupId>
 		<artifactId>onderwijs-parent</artifactId>
-		<version>2012.2.8</version>
+		<version>2012.2.9</version>
 	</parent>
 
 	<groupId>nl.topicus</groupId>
@@ -76,6 +76,27 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jslint-maven-plugin</artifactId>
+				<version>1.0.1</version>
+				<configuration>
+					<sourceJsFolder>${basedir}/src/main/webapp/robots</sourceJsFolder>
+					<strictWhiteSpace>false</strictWhiteSpace>
+					<tolerateContinuation>true</tolerateContinuation>
+					<excludes>
+						<exclude>d3.v2.js</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jslint</goal>
+							<goal>test-jslint</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
