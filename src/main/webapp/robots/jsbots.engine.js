@@ -1,7 +1,9 @@
 var d3, jsbots, Worker;
 
 (function(){
-	jsbots.engine = function() {
+	jsbots.engine = {};
+	
+	jsbots.engine.engine = function() {
 		function RobotsEngine() {
 		}
 		
@@ -44,7 +46,7 @@ var d3, jsbots, Worker;
 		}
 		
 		RobotsEngine.prototype.addRobot = function(script, color) {
-			var robot = jsbots.robot(),
+			var robot = jsbots.engine.robot(),
 				robotWorker = new Worker("robots/"+script+".js");
 			engine.on("tick."+script, function(data) {
 				robotWorker.postMessage(data);
@@ -66,5 +68,53 @@ var d3, jsbots, Worker;
 		engine = new RobotsEngine();
 		d3.rebind(engine, event, "on");
 		return engine;
+	};
+	
+	jsbots.engine.robot = function() {
+		function JSRobot() {
+		}
+		
+		var robot,
+		lastCollision = 0,
+		actions = [];
+		
+		JSRobot.prototype = jsbots.robot();
+		
+		function updateValue(old, target, delta) {
+			return old + Math.min(delta, Math.max(-delta, target - old));
+		}
+		
+		function processActions() {
+			actions.forEach(function(a) {
+				if (a.type === "speed") {
+					robot.targetSpeed(a.value);
+				} else if (a.type === "angle") {
+					robot.targetAngle(a.value);
+				}
+			});
+			actions = [];
+		}
+		
+		JSRobot.prototype.tick = function(delta) {
+			processActions();
+			this.speed(Math.min(15, Math.max(-5, updateValue(this.speed(), this.targetSpeed(), delta/200)))); 
+			this.angle(updateValue(this.angle(), this.targetAngle(), delta/10));
+			this.x(this.x() + Math.sin(this.angle()*Math.PI/180) * this.speed() * delta / 100);
+			this.y(this.y() + Math.cos(this.angle()*Math.PI/180) * this.speed() * delta / 100);
+		};
+		
+		JSRobot.prototype.addAction = function(action) {
+			actions.push(action);
+		};
+		
+		JSRobot.prototype.collide = function(elapsed) {
+			if (lastCollision + 100 < elapsed) {
+				this.speed(-this.speed());
+				lastCollision = elapsed;
+			}
+		};
+
+		robot = new JSRobot();
+		return robot;
 	};
 }());

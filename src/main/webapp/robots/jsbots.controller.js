@@ -1,7 +1,7 @@
 var d3, jsbots;
 
 (function() {
-	var engine = jsbots.engine(), 
+	var engine = jsbots.engine.engine(), 
 		ui = jsbots.ui();
 	ui.setup();
 	engine.addRobot("tower", "blue");

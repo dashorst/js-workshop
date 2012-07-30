@@ -8,9 +8,7 @@ var jsbots;
 			color,
 			x, y,
 			speed, targetSpeed,
-			angle, targetAngle,
-			lastCollision = 0,
-			actions = [];
+			angle, targetAngle;
 		
 		function JSRobot() {
 			x = Math.random() * 1300 + 100;
@@ -21,59 +19,45 @@ var jsbots;
 			targetAngle = 0;
 		}
 		
-		function updateValue(old, target, delta) {
-			return old + Math.min(delta, Math.max(-delta, target - old));
-		}
-		
-		function processActions() {
-			actions.forEach(function(a) {
-				if (a.type === "speed") {
-					targetSpeed = a.value;
-				} else if (a.type === "angle") {
-					targetAngle = a.value;
-				}
-			});
-			actions = [];
-		}
-		
-		JSRobot.prototype.tick = function(delta) {
-			processActions();
-			speed = Math.min(15, Math.max(-5, updateValue(speed, targetSpeed, delta/200))); 
-			angle = updateValue(angle, targetAngle, delta/10);
-			x += Math.sin(angle*Math.PI/180) * speed * delta / 100;
-			y += Math.cos(angle*Math.PI/180) * speed * delta / 100;
+		JSRobot.prototype.x = function(nx) {
+			if (!arguments.length) {return x;}
+			x = nx;
+			return this;
 		};
 		
-		JSRobot.prototype.addAction = function(action) {
-			actions.push(action);
+		JSRobot.prototype.y = function(ny) {
+			if (!arguments.length) {return y;}
+			y = ny;
+			return this;
 		};
 		
-		JSRobot.prototype.collide = function(elapsed) {
-			if (lastCollision + 100 < elapsed) {
-				speed = -speed;
-				lastCollision = elapsed;
-			}
+		JSRobot.prototype.angle = function(nangle) {
+			if (!arguments.length) {return angle;}
+			angle = nangle;
+			return this;
 		};
 		
-		JSRobot.prototype.x = function() {
-			return x;
+		JSRobot.prototype.targetAngle = function(ntargetAngle) {
+			if (!arguments.length) {return targetAngle;}
+			targetAngle = ntargetAngle;
+			return this;
 		};
 		
-		JSRobot.prototype.y = function() {
-			return y;
+		JSRobot.prototype.speed = function(nspeed) {
+			if (!arguments.length) {return speed;}
+			speed = nspeed;
+			return this;
 		};
 		
-		JSRobot.prototype.angle = function() {
-			return angle;
+		JSRobot.prototype.targetSpeed = function(ntargetSpeed) {
+			if (!arguments.length) {return targetSpeed;}
+			targetSpeed = ntargetSpeed;
+			return this;
 		};
 		
-		JSRobot.prototype.speed = function() {
-			return speed;
-		};
-		
-		JSRobot.prototype.color = function(c) {
-			if (!arguments) {return c;}
-			color = c;
+		JSRobot.prototype.color = function(nc) {
+			if (!arguments.length) {return color;}
+			color = nc;
 			return this;
 		};
 		
