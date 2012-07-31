@@ -85,9 +85,6 @@
 					<sourceJsFolder>${basedir}/src/main/webapp/robots</sourceJsFolder>
 					<strictWhiteSpace>false</strictWhiteSpace>
 					<tolerateContinuation>true</tolerateContinuation>
-					<excludes>
-						<exclude>d3.v2.js</exclude>
-					</excludes>
 				</configuration>
 				<executions>
 					<execution>

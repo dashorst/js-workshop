@@ -7,8 +7,6 @@ var d3, jsbots;
 	engine.addRobot("tower", "blue");
 	engine.addRobot("circle", "yellow");
 	engine.addRobot("target", "limegreen");
-	engine.on("tick.controller", function(data) {
-		ui.draw(data.robots);
-	});
+	engine.on("tick.controller", ui.draw);
 	engine.start();
 }());

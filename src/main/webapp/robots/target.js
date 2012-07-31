@@ -1,24 +1,31 @@
-var self;
+var jsbots, c, importScripts;
 
-self.addEventListener("message", function(e) {
-	var x = e.data.robots.target.x,
-		y = e.data.robots.target.y,
-		dx = e.data.robots.circle.x - x,
-		dy = e.data.robots.circle.y - y,
-		angle = e.data.robots.target.angle,
-		a;
-	a = Math.atan2(dx, dy)*180/Math.PI;
-	while (angle - a > 180) {
+importScripts("../d3.dispatch.js", "jsbots.base.js", "jsbots.api.js");
+
+function ordering(prop) {
+	return function(a, b) {return prop(a) < prop(b) ? a : b;};
+}
+
+c = jsbots.api.communicator(this);
+c.on("tick", function(robot, others, data) {
+	var a, sx, sy, closest, time;
+	closest = others.reduce(ordering(robot.distance));
+	time = robot.distance(closest) * closest.speed() *
+		jsbots.consts.robotSpeedRatio / jsbots.consts.projectileSpeedRatio;
+	sx = closest.x() - robot.x() + Math.sin(jsbots.util.toRad(closest.angle())) * time;
+	sy = closest.y() - robot.y() + Math.cos(jsbots.util.toRad(closest.angle())) * time;
+	
+	a = Math.atan2(sx, sy)*180/Math.PI;
+	while (robot.angle() - a > 180) {
 		a += 360;
 	}
-	while (a - angle > 180) {
+	while (a - robot.angle() > 180) {
 		a -= 360;
 	}
-	
-	if (Math.sqrt(dx*dx+dy*dy) < 100) {
-		a += 180;
+	robot.speed((Math.sqrt(sx*sx+sy*sy) - 200)/20);
+	robot.turretAngle(a-robot.angle());
+	robot.angle(a-20);
+	if (robot.charge() > 5) {
+		robot.fire();
 	}
-	
-	self.postMessage({type: "speed", value: 11});
-	self.postMessage({type: "angle", value: a});
-}, false);
+});
