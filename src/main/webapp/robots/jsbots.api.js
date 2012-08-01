@@ -7,6 +7,7 @@ var d3, jsbots;
 		var communicator,
 			event = d3.dispatch("start", "tick", "hit", "collision"),
 			worker = pworker,
+			startTime,
 			name;
 		
 		function Communicator() {
@@ -22,7 +23,11 @@ var d3, jsbots;
 		}
 		
 		function processTick(data) {
-			var thisRobot, robots;
+			var thisRobot, robots, curTime;
+			curTime = Date.now();
+			if (!startTime) {
+				startTime = curTime - data.elapsed;
+			}
 			thisRobot = jsbots.api.robot(worker).fromJSON(data.robots[name]);
 			robots = objectValues(data.robots)
 				.filter(function(r) {return r.name !== thisRobot.name();})
@@ -30,7 +35,11 @@ var d3, jsbots;
 			thisRobot.events().forEach(function(e) {
 				event[e.type](thisRobot, robots, data, e);
 			});
-			event.tick(thisRobot, robots, data);
+			if (curTime - startTime < data.elapsed + 20) {
+				event.tick(thisRobot, robots, data);
+			} else {
+				thisRobot.dropMessage();
+			}
 		}
 		
 		Communicator.prototype.messageReceived = function(e) {
@@ -39,6 +48,8 @@ var d3, jsbots;
 				event.start(e.data);
 			} else if (e.data.type === "tick") {
 				processTick(e.data);
+			} else if (e.data.type === "stop") {
+				worker.close();
 			}
 		};
 		
@@ -90,6 +101,11 @@ var d3, jsbots;
 				worker.postMessage({type: "status", value: nstatus});
 			}
 			return superPrototype().status.apply(this, arguments);
+		};
+		
+		JSAPIRobot.prototype.dropMessage = function() {
+			worker.postMessage({type: "drop"});
+			return this;
 		};
 		
 		JSAPIRobot.prototype.log = function(value) {

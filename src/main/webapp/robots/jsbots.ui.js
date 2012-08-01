@@ -65,7 +65,7 @@ var d3, jsbots;
 				.attr("transform", function(d) {return "scale(0.4) rotate("+d.turretAngle+")";});
 		}
 		
-		function drawStats(robots) {
+		function drawStats(robots, data) {
 			var robotGs, enterG;
 			robotGs = stats.selectAll("g.robot-stat").data(robots, function(r) {return r.name;});
 			enterG = robotGs.enter()
@@ -98,6 +98,9 @@ var d3, jsbots;
 				.classed("direction", true);
 			enterG.append("text")
 				.attr("transform", "translate(10, 35)")
+				.classed("dropped", true);
+			enterG.append("text")
+				.attr("transform", "translate(10, 55)")
 				.classed("status", true);
 			
 			robotGs.exit()
@@ -113,6 +116,8 @@ var d3, jsbots;
 				.text(function(r) {return "Charge: "+r.charge.toFixed(1);});
 			robotGs.select("text.direction")
 				.text(function(r) {return "Dir.: "+r.direction.toFixed(1);});
+			robotGs.select("text.dropped")
+				.text(function(r) {return "Dropped frames: "+(100*r.dropped/data.tickCount).toFixed(0)+"%";});
 			robotGs.select("text.status")
 				.text(function(r) {return r.status;});
 		}
@@ -155,7 +160,7 @@ var d3, jsbots;
 				robots.push(data.robots[name]);
 			}
 			drawRobots(robots);
-			drawStats(robots);
+			drawStats(robots, data);
 			drawProjectiles(data.projectiles);
 			if (jsbots.consts.debug) {
 				drawMarks(data.marks);

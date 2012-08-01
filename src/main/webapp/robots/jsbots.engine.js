@@ -78,6 +78,7 @@ var d3, jsbots, Worker;
 				delta = elapsed - lastTick,
 				robotsJSON = {};
 			if (delta > 10) {
+				tickCount++;
 				lastTick = elapsed;
 				projectiles = projectiles.filter(function(p){
 					p.x += Math.sin(jsbots.util.toRad(p.direction)) * delta * jsbots.consts.projectileSpeedRatio;
@@ -101,6 +102,7 @@ var d3, jsbots, Worker;
 				}
 				event.tick({
 					type: "tick",
+					tickCount: tickCount,
 					delta: delta,
 					elapsed: elapsed,
 					projectiles: projectiles,
@@ -108,13 +110,21 @@ var d3, jsbots, Worker;
 					robots: robotsJSON
 				});
 				marks = [];
+				if (Object.getOwnPropertyNames(robots).length === 1) {
+					if (running) {
+						engine.stop();
+					} else {
+						return projectiles.length === 0 &&
+							robots[Object.getOwnPropertyNames(robots)[0]].speed() === 0;
+					}
+				}
 			}
 			return elapsed > 300000 || Object.getOwnPropertyNames(robots).length === 0;
 		}
 		
 		RobotsEngine.prototype.addRobot = function(script, color) {
-			var robot = jsbots.engine.robot(),
-				robotWorker = new Worker("robots/"+script+".js");
+			var robotWorker = new Worker("robots/"+script+".js"),
+				robot = jsbots.engine.robot(robotWorker);
 			engine.on("tick."+script, function(data) {
 				robotWorker.postMessage(data);
 			});
@@ -127,13 +137,14 @@ var d3, jsbots, Worker;
 		};
 		
 		RobotsEngine.prototype.removeRobot = function(robot) {
+			robot.worker().postMessage({type: "stop"});
 			delete robots[robot.name()];
 			engine.on("tick."+robot.name(), null);
 		};
 		
 		RobotsEngine.prototype.fireProjectile = function(robot, charge) {
 			var dir = robot.direction() + robot.turretAngle();
-			if (charge > 5 && robot.charge() >= charge) {
+			if (charge >= 5 && robot.charge() >= charge) {
 				projectiles.push({
 					charge: charge,
 					direction: dir,
@@ -159,16 +170,26 @@ var d3, jsbots, Worker;
 			d3.timer(tick);
 		};
 		
+		RobotsEngine.prototype.stop = function() {
+			var name;
+			running = false;
+			for (name in robots) {
+				robots[name].targetSpeed(0).worker().postMessage({type: "stop"});
+				engine.on("tick."+name, null);
+			}
+		};
+		
 		engine = new RobotsEngine();
 		d3.rebind(engine, event, "on");
 		return engine;
 	};
 	
-	jsbots.engine.robot = function() {
+	jsbots.engine.robot = function(pworker) {
 		function JSRobot() {
 		}
 		
 		var robot,
+			worker = pworker,
 			lastCollision = 0,
 			actions = [];
 		
@@ -198,6 +219,8 @@ var d3, jsbots, Worker;
 					engine.fireProjectile(robot, a.value);
 				} else if (a.type === "status") {
 					robot.status(a.value);
+				} else if (a.type === "drop") {
+					robot.dropMessage();
 				} else if (a.type === "log") {
 					console.log(a.value);
 				} else if (a.type === "mark") {
@@ -205,6 +228,10 @@ var d3, jsbots, Worker;
 				}
 			});
 			actions = [];
+		}
+		
+		JSRobot.prototype.worker = function() {
+			return worker;
 		}
 		
 		JSRobot.prototype.tick = function(delta, engine) {

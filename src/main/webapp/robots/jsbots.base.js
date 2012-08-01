@@ -14,6 +14,7 @@ var jsbots;
 			speed, targetSpeed,
 			direction, targetDirection,
 			turretAngle, targetTurretAngle,
+			dropped,
 			events = [];
 		
 		function JSRobot() {
@@ -28,6 +29,7 @@ var jsbots;
 			targetDirection = 0;
 			turretAngle = 0;
 			targetTurretAngle = 0;
+			dropped = 0;
 		}
 		
 		JSRobot.prototype.name = function(nname) {
@@ -107,6 +109,15 @@ var jsbots;
 			color = nc;
 			return this;
 		};
+
+		JSRobot.prototype.dropped = function() {
+			return dropped;
+		};
+		
+		JSRobot.prototype.dropMessage = function() {
+			dropped++;
+			return this;
+		};
 		
 		JSRobot.prototype.events = function() {
 			return events;
@@ -136,6 +147,7 @@ var jsbots;
 			turretAngle = json.turretAngle;
 			targetTurretAngle = json.targetTurretAngle;
 			events = json.events;
+			dropped = json.dropped;
 			color = json.color;
 			return this;
 		};
@@ -155,6 +167,7 @@ var jsbots;
 				turretAngle: turretAngle,
 				targetTurretAngle: targetTurretAngle,
 				events: events,
+				dropped: dropped,
 				color: color
 			};
 		};
