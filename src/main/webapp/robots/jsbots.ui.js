@@ -6,11 +6,12 @@ var d3, jsbots;
 		}
 		
 		var ui,
+			stats,
 			arena;
 		
 		RobotsUI.prototype.setup = function() {
 			var svg = d3.select("body").append("svg")
-				.attr("width", 1850)
+				.attr("width", 1900)
 				.attr("height", 1000);
 			arena = svg.append("g")
 				.classed("arena", true)
@@ -19,6 +20,9 @@ var d3, jsbots;
 				.classed("perimeter", true)
 				.attr("width", jsbots.consts.arenaWidth)
 				.attr("height", jsbots.consts.arenaHeight);
+			stats = svg.append("g")
+				.classed("robot-stats", true)
+				.attr("transform", "translate("+(jsbots.consts.arenaWidth+40)+",20)");
 		};
 		
 		function drawRobots(robots) {
@@ -52,13 +56,65 @@ var d3, jsbots;
 			
 			robotGs
 				.attr("transform", function(d) {
-					return "translate("+d.x+","+(jsbots.consts.arenaHeight-d.y)+") rotate("+d.angle+")";
+					return "translate("+d.x+","+(jsbots.consts.arenaHeight-d.y)+") rotate("+d.direction+")";
 				})
 				.select("text")
 				.text(function (d) {return Math.round(d.hitpoints);});
 			robotGs
 				.select("path.turret")
 				.attr("transform", function(d) {return "scale(0.4) rotate("+d.turretAngle+")";});
+		}
+		
+		function drawStats(robots) {
+			var robotGs, enterG;
+			robotGs = stats.selectAll("g.robot-stat").data(robots, function(r) {return r.name;});
+			enterG = robotGs.enter()
+				.append("g")
+				.classed("robot-stat", true)
+				.attr("transform", function(d, i) {return "translate(0, "+(i*150)+")"});
+			enterG.append("rect")
+				.attr("width", 350)
+				.attr("height", 140)
+				.style("stroke", function(r) {return r.color;});
+			enterG.append("rect")
+				.attr("width", 70)
+				.attr("height", 5)
+				.style("fill", "black")
+				.attr("transform", "translate(15, -2)");
+			enterG.append("text")
+				.text(function(r) {return r.name;})
+				.attr("transform", "translate(20, -2)");
+			enterG.append("text")
+				.attr("transform", "translate(10, 15)")
+				.classed("hitpoints", true);
+			enterG.append("text")
+				.attr("transform", "translate(100, 15)")
+				.classed("speed", true);
+			enterG.append("text")
+				.attr("transform", "translate(190, 15)")
+				.classed("charge", true);
+			enterG.append("text")
+				.attr("transform", "translate(280, 15)")
+				.classed("direction", true);
+			enterG.append("text")
+				.attr("transform", "translate(10, 35)")
+				.classed("status", true);
+			
+			robotGs.exit()
+				.style("opacity", 0.5)
+				.select("text.hitpoints")
+				.text("Hit.: 0");
+				
+			robotGs.select("text.hitpoints")
+				.text(function(r) {return "Hitp.: "+r.hitpoints.toFixed(0);});
+			robotGs.select("text.speed")
+				.text(function(r) {return "Speed: "+r.speed.toFixed(1);});
+			robotGs.select("text.charge")
+				.text(function(r) {return "Charge: "+r.charge.toFixed(1);});
+			robotGs.select("text.direction")
+				.text(function(r) {return "Dir.: "+r.direction.toFixed(1);});
+			robotGs.select("text.status")
+				.text(function(r) {return r.status;});
 		}
 		
 		function drawProjectiles(projectiles) {
@@ -73,6 +129,24 @@ var d3, jsbots;
 				.attr("cy", function(p) {return jsbots.consts.arenaHeight-p.y;});
 		}
 		
+		function drawMarks(marks) {
+			var selection, selectionG;
+			selection = arena.selectAll("g.mark").data(marks);
+			selectionG = selection.enter()
+				.append("g")
+				.classed("mark", true);
+			selectionG.append("line")
+				.attr("x1", -10).attr("y1", -10)
+				.attr("x2", 10).attr("y2", 10);
+			selectionG.append("line")
+				.attr("x1", 10).attr("y1", -10)
+				.attr("x2", -10).attr("y2", 10);
+			selection.exit().remove();
+			selection
+				.attr("transform", function(m) {return "translate("+m.x+","+(jsbots.consts.arenaHeight-m.y)+")";})
+				.style("stroke", function(m) {return m.color;});
+		}
+		
 		RobotsUI.prototype.draw = function(data) {
 			var robots = [],
 				name;
@@ -81,7 +155,11 @@ var d3, jsbots;
 				robots.push(data.robots[name]);
 			}
 			drawRobots(robots);
+			drawStats(robots);
 			drawProjectiles(data.projectiles);
+			if (jsbots.consts.debug) {
+				drawMarks(data.marks);
+			}
 		};
 		
 		ui = new RobotsUI();

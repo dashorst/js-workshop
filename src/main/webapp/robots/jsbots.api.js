@@ -71,11 +71,11 @@ var d3, jsbots;
 			return superPrototype().speed.apply(this, arguments);
 		};
 		
-		JSAPIRobot.prototype.angle = function(nangle) {
+		JSAPIRobot.prototype.direction = function(ndirection) {
 			if (arguments.length === 1) {
-				worker.postMessage({type: "angle", value: nangle});
+				worker.postMessage({type: "direction", value: ndirection});
 			}
-			return superPrototype().angle.apply(this, arguments);
+			return superPrototype().direction.apply(this, arguments);
 		};
 		
 		JSAPIRobot.prototype.turretAngle = function(nturretAngle) {
@@ -85,11 +85,32 @@ var d3, jsbots;
 			return superPrototype().turretAngle.apply(this, arguments);
 		};
 		
-		JSAPIRobot.prototype.fire = function() {
-			worker.postMessage({type: "fire"});
+		JSAPIRobot.prototype.status = function(nstatus) {
+			if (arguments.length === 1) {
+				worker.postMessage({type: "status", value: nstatus});
+			}
+			return superPrototype().status.apply(this, arguments);
+		};
+		
+		JSAPIRobot.prototype.log = function(value) {
+			worker.postMessage({type: "log", value: value});
 			return this;
 		};
 		
+		JSAPIRobot.prototype.mark = function(color, x, y) {
+			worker.postMessage({type: "mark", color: color, x: x, y: y});
+			return this;
+		};
+		
+		JSAPIRobot.prototype.fire = function(charge) {
+			if (!charge) {
+				charge = robot.charge();
+			}
+			worker.postMessage({type: "fire", value: charge});
+			robot.charge(robot.charge() - charge);
+			return this;
+		};
+				
 		JSAPIRobot.prototype.distance = function(other) {
 			var dx = robot.x() - other.x(),
 				dy = robot.y() - other.y();

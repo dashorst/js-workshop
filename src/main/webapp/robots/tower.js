@@ -1,6 +1,9 @@
-var self;
+var jsbots, c, importScripts;
 
-self.addEventListener("message", function(e) {
-	self.postMessage({type: "speed", value: 10});
-	self.postMessage({type: "angle", value: 270 - 90 * (Math.floor(e.data.elapsed / 5000) % 4)});
-}, false);
+importScripts("jsbots.worker.js");
+
+c = jsbots.api.communicator(this);
+c.on("tick", function(robot, others, data) {
+	robot.speed(10);
+	robot.direction(Math.floor(data.elapsed / 5000) * 90);
+});

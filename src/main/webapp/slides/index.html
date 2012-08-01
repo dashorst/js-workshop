@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js ie6" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->  <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	
+	<title>JavaScript</title>
+	
+	<meta name="author" content="Emond Papegaaij">
+	<meta name="viewport" content="width=1024, user-scalable=no">
+	
+	<!-- Core and extension CSS files -->
+	<link rel="stylesheet" href="core/deck.core.css">
+	<link rel="stylesheet" href="extensions/goto/deck.goto.css">
+	<link rel="stylesheet" href="extensions/menu/deck.menu.css">
+	<link rel="stylesheet" href="extensions/navigation/deck.navigation.css">
+	<link rel="stylesheet" href="extensions/status/deck.status.css">
+	<link rel="stylesheet" href="extensions/hash/deck.hash.css">
+	<link rel="stylesheet" href="extensions/scale/deck.scale.css">
+	<link rel="stylesheet" href="extensions/codemirror/deck.codemirror.css">
+	<link rel="stylesheet" href="extensions/codemirror/themes/default.css">
+	
+	<!-- Style theme. More available in /themes/style/ or create your own. -->
+	<link rel="stylesheet" href="themes/style/swiss.css">
+	
+	<!-- Transition theme. More available in /themes/transition/ or create your own. -->
+	<link rel="stylesheet" href="themes/transition/horizontal-slide.css">
+
+	<link rel="stylesheet" href="custom.css">
+	
+	<script src="modernizr.custom.js"></script>
+</head>
+
+<body class="deck-container">
+
+<!-- Begin slides -->
+<section class="slide" id="title-slide">
+	<h1>JavaScript</h1>
+</section>
+
+<section class="slide" id="overview">
+	<h2>Wat gaan we behandelen...</h2>
+	<ol>
+		<li>
+			<h3>Basics</h3>
+			<p>Syntax, types, JavaScript !== Java, operators, <code>null</code>, <code>undefined</code></p>
+		</li>
+		<li>
+			<h3>Functies</h3>
+			<p>Referenties, closures, scope</p>
+		</li>
+		<li>
+			<h3>Objecten</h3>
+			<p>Properties, arrays</p>
+		</li>
+		<li>
+			<h3><code>this</code></h3>
+			<p>Functie calls, <code>call</code>, <code>apply</code></p>
+		</li>
+		<li>
+			<h3>Prototype inheritance</h3>
+			<p>Constructor functies, <code>prototype</code>, <code>new</code></p>
+		</li>
+	</ol>
+</section>
+
+<section class="slide" id="basics-syntax">
+	<h2>Syntax</h2>
+	<p>C-style syntax, <code>var</code> maakt een variabele, <code>function</code> een functie.</p>
+	<div class="code" mode="javascript" style="display: none;">function objectValues(obj) {
+   var cur, ret = [];
+   for (cur in obj) {
+      ret.push(obj[cur]);
+   }
+   return ret;
+}</div>
+</section>
+
+<section class="slide" id="basics-not-java">
+	<h2>JavaScript !== Java</h2>
+	<p>Aldus WikiPedia</p>
+	<blockquote>JavaScript is a <span class="not-in-java">prototype-based scripting</span> language that is
+		<span class="not-in-java">dynamic</span>, <span class="not-in-java">weakly typed</span> and has
+		<span class="not-in-java">first-class functions</span>. It is a <span class="not-in-java">multi-paradigm
+		language</span>, supporting <span class="also-in-java">object-oriented</span>,
+		<span class="not-in-java">imperative</span>, and <span class="not-in-java">functional programming</span>
+		styles.</blockquote>
+	<h3 class="slide not-in-java" id="basics-not-java-highlight">Niet in Java</h3>
+	<h3 class="slide also-in-java" id="basics-also-java-highlight">Wel in Java</h3>
+</section>
+
+<section class="slide" id="basics-operators">
+	<h2>Operators</h2>
+	<p>Vergelijkbaar met Java operators, maar unsafe</p>
+	
+	<ol>
+		<li class="slide" id="basics-operators-plus">
+			<h3><code>+</code></h3>
+			Optellen <strong>of</strong> concatenatie (<code>3+4===7</code>, <code>'3'+4==='34'</code>)
+		</li>
+		
+		<li class="slide" id="basics-operators-equals">
+			<h3><code>==</code> en <code>!=</code></h3>
+			raar, gevaarlijk, niet gebruiken (<code>" \t\r\n " == 0</code>) 
+		</li>
+
+		<li class="slide" id="basics-operators-identical">
+			<h3><code>===</code> en <code>!==</code></h3>
+			doen wat <code>==</code> en <code>!=</code> hadden moeten doen,
+			typed comparison (<code>"a"==="a"</code>, <code>"4"!==4</code>)
+		</li>
+	</ol>
+</section>
+
+<section class="slide" id="basics-types">
+	<h2>Types</h2>
+	<p>Alles is een <code>Object</code>. Andere veel gebruikte types: <code>Function</code>,
+	 <code>Array</code> en <code>String</code></p>
+	<div class="code" mode="javascript" style="display: none;">var func = function() {};
+var obj = {foo:"bar"};
+var arr = [4,3,2,1];
+var str = "value"; /* of 'value' */</div>
+</section>
+
+<section class="slide" id="basics-array">
+	<h2>Array</h2>
+	<ol>
+		<li>
+			<h3>List-like Objects</h3>
+			JavaScript arrays hebben geen vaste lengte
+		</li>
+		<li>
+			<h3>Indices zijn properties</h3>
+			De indexering via <code>arr[2]</code> betekent 'property <code>2</code> van <code>arr</code>'
+		</li>
+		<li>
+			<h3>Methodes</h3>
+			<code>push</code>, <code>pop</code>, <code>sort</code>, <code>splice</code>
+		</li>
+		<li>
+			<h3>Methodes die niet in IE werken</h3>
+			<code>filter</code>, <code>forEach</code>, <code>indexOf</code>, <code>map</code>
+		</li>
+	</ol>
+</section>
+
+<section class="slide" id="basics-array-example">
+	<h2>Array voorbeeld</h2>
+	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var arr = [1,2,3];
+console.log(arr);
+console.log(arr[1], arr.indexOf(2));
+
+arr.push(4);
+console.log(arr);
+console.log(arr.map(function(v){return v*2;}));</textarea>
+</section>
+
+<section class="slide" id="basics-null-undefined">
+	<h2><code>null</code> en <code>undefined</code></h2>
+	<ol>
+		<li>
+			<h3><code>undefined</code></h3>
+			<p>Een type, geen waarde (<code>undefined = 'defined'; /* nu is undefined defined */</code>).</p>
+			<p>Wordt gebruikt bij niet geinitialiseerde <code>var</code>s of niet bestaande properties.</p>
+		</li>
+		<li>
+			<h3><code>null</code></h3>
+			<p>Gereserveerde waarde, die staat voor 'leeg'.</p>
+		</li>
+		<li>
+			<h3><code>null !== undefined</code></h3>
+			<p><code>null</code> en <code>undefined</code> zijn niet hetzelfde, maar worden wel door elkaar
+			gebruikt.</p>
+			<p>Veel gebruikte manier van checken: <code>!x === true</code> en <code>!!x === false</code>
+			voor zowel <code>null</code> als <code>undefined</code>.</p> 
+		</li>
+	</ol>
+</section>
+
+
+<section class="slide" id="basics-exercise">
+	<h2>Creëer een robot</h2>
+	<ol>
+		<li>
+			<h3><code>undefined</code></h3>
+			<p>Een type, geen waarde (<code>undefined = 'defined'; /* nu is undefined defined */</code>).</p>
+			<p>Wordt gebruikt bij niet geinitialiseerde <code>var</code>s of niet bestaande properties.</p>
+		</li>
+		<li>
+			<h3><code>null</code></h3>
+			<p>Gereserveerde waarde, die staat voor 'leeg'.</p>
+		</li>
+		<li>
+			<h3><code>null !== undefined</code></h3>
+			<p><code>null</code> en <code>undefined</code> zijn niet hetzelfde, maar worden wel door elkaar
+			gebruikt.</p>
+			<p>Veel gebruikte manier van checken: <code>!x === true</code> en <code>!!x === false</code>
+			voor zowel <code>null</code> als <code>undefined</code>.</p> 
+		</li>
+	</ol>
+</section>
+<!-- deck.navigation snippet -->
+<a href="#" class="deck-prev-link" title="Previous">&#8592;</a>
+<a href="#" class="deck-next-link" title="Next">&#8594;</a>
+
+<!-- deck.status snippet -->
+<p class="deck-status">
+	<span class="deck-status-current"></span>
+	/
+	<span class="deck-status-total"></span>
+</p>
+
+<!-- deck.goto snippet -->
+<form action="." method="get" class="goto-form">
+	<label for="goto-slide">Go to slide:</label>
+	<input type="text" name="slidenum" id="goto-slide" list="goto-datalist">
+	<datalist id="goto-datalist"></datalist>
+	<input type="submit" value="Go">
+</form>
+
+<!-- deck.hash snippet -->
+<a href="." title="Permalink to this slide" class="deck-permalink">#</a>
+
+
+<!-- Grab CDN jQuery, with a protocol relative URL; fall back to local if offline -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="jquery-1.7.2.min.js"><\/script>')</script>
+
+<!-- Deck Core and extensions -->
+<script src="core/deck.core.js"></script>
+<script src="extensions/hash/deck.hash.js"></script>
+<script src="extensions/menu/deck.menu.js"></script>
+<script src="extensions/goto/deck.goto.js"></script>
+<script src="extensions/status/deck.status.js"></script>
+<script src="extensions/navigation/deck.navigation.js"></script>
+<script src="extensions/scale/deck.scale.js"></script>
+<script src="extensions/codemirror/codemirror.js"></script>
+<script src="extensions/codemirror/mode/javascript/javascript.js"></script>
+<script src="extensions/codemirror/deck.codemirror.js"></script>
+
+<!-- Initialize the deck -->
+<script>
+$(function() {
+	$.deck('.slide');
+});
+</script>
+
+</body>
+</html>

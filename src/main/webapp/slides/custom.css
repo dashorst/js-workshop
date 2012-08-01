@@ -1,0 +1,16 @@
+.deck-container .slide blockquote {
+	font-size: 1.5em;
+}
+
+#overview li {
+	padding: 0;
+}
+
+.on-slide-basics-not-java-highlight .not-in-java,
+.on-slide-basics-also-java-highlight .not-in-java {
+	color: red!important;
+}
+
+.on-slide-basics-also-java-highlight .also-in-java {
+	color: green!important;
+}

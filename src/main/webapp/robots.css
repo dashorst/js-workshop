@@ -57,3 +57,12 @@ body {
 circle.projectile {
 	fill: yellow;
 }
+
+g.mark {
+	stroke-width: 2;
+}
+
+g.robot-stats text {
+	fill: white;
+	dominant-baseline: central;
+}
