@@ -71,7 +71,7 @@ var d3, jsbots;
 			enterG = robotGs.enter()
 				.append("g")
 				.classed("robot-stat", true)
-				.attr("transform", function(d, i) {return "translate(0, "+(i*150)+")"});
+				.attr("transform", function(d, i) {return "translate(0, "+(i*150)+")";});
 			enterG.append("rect")
 				.attr("width", 350)
 				.attr("height", 140)

@@ -128,9 +128,7 @@ var d3, jsbots;
 		};
 				
 		JSAPIRobot.prototype.distance = function(other) {
-			var dx = robot.x() - other.x(),
-				dy = robot.y() - other.y();
-			return Math.sqrt(dx*dx + dy*dy);
+			return jsbots.util.dist(robot.x(), robot.y(), other.x(), other.y());
 		};
 		
 		robot = new JSAPIRobot();

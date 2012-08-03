@@ -67,6 +67,10 @@
 	</ol>
 </section>
 
+<section class="slide" id="basics-title">
+	<h1>Basics</h1>
+</section>
+
 <section class="slide" id="basics-syntax">
 	<h2>Syntax</h2>
 	<p>C-style syntax, <code>var</code> maakt een variabele, <code>function</code> een functie.</p>
@@ -97,17 +101,17 @@
 	<p>Vergelijkbaar met Java operators, maar unsafe</p>
 	
 	<ol>
-		<li class="slide" id="basics-operators-plus">
+		<li>
 			<h3><code>+</code></h3>
 			Optellen <strong>of</strong> concatenatie (<code>3+4===7</code>, <code>'3'+4==='34'</code>)
 		</li>
 		
-		<li class="slide" id="basics-operators-equals">
+		<li>
 			<h3><code>==</code> en <code>!=</code></h3>
 			raar, gevaarlijk, niet gebruiken (<code>" \t\r\n " == 0</code>) 
 		</li>
 
-		<li class="slide" id="basics-operators-identical">
+		<li>
 			<h3><code>===</code> en <code>!==</code></h3>
 			doen wat <code>==</code> en <code>!=</code> hadden moeten doen,
 			typed comparison (<code>"a"==="a"</code>, <code>"4"!==4</code>)
@@ -180,28 +184,58 @@ console.log(arr.map(function(v){return v*2;}));</textarea>
 	</ol>
 </section>
 
-
 <section class="slide" id="basics-exercise">
 	<h2>Creëer een robot</h2>
+	<div class="code" mode="javascript" style="display: none;">var jsbots, c, importScripts;
+
+importScripts("jsbots.worker.js");
+
+c = jsbots.api.communicator(this);
+c.on("tick", function(robot, others, data) {
+    /* code goes here */
+});</div>
+	<div class="code" mode="javascript" style="display: none;">/* in jsbot.controller.js */
+engine.addRobot("robotnaam", "limegreen");</div>
+</section>
+
+<section class="slide" id="functions-title">
+	<h1>Functies</h1>
+</section>
+
+<section class="slide" id="functions-overview">
+	<h2>Functies</h2>
 	<ol>
 		<li>
-			<h3><code>undefined</code></h3>
-			<p>Een type, geen waarde (<code>undefined = 'defined'; /* nu is undefined defined */</code>).</p>
-			<p>Wordt gebruikt bij niet geinitialiseerde <code>var</code>s of niet bestaande properties.</p>
+			<h3>First-class citizen</h3>
+			Functies kunnen aan variabelen geassigned worden, meegegeven worden aan andere
+			functies of geretouneerd worden.
 		</li>
+		
 		<li>
-			<h3><code>null</code></h3>
-			<p>Gereserveerde waarde, die staat voor 'leeg'.</p>
+			<h3>Scope</h3>
+			Functies bepalen scope, dus niet de { ... } 
 		</li>
+
 		<li>
-			<h3><code>null !== undefined</code></h3>
-			<p><code>null</code> en <code>undefined</code> zijn niet hetzelfde, maar worden wel door elkaar
-			gebruikt.</p>
-			<p>Veel gebruikte manier van checken: <code>!x === true</code> en <code>!!x === false</code>
-			voor zowel <code>null</code> als <code>undefined</code>.</p> 
+			<h3>Closure</h3>
+			Functies kunnen bij de scope waar ze in staan, ook als de functies buiten deze
+			scope aangeroepen worden			
 		</li>
 	</ol>
 </section>
+
+<section class="slide" id="functions-first-class">
+	<h2>Functies als First-class citizen</h2>
+	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var comp = function(a, b) {
+   return a - b;
+};
+var arr = [5, 4, 30, 22, -2, 15, -6, -30];
+console.log(arr.sort());
+console.log(arr.sort(comp));</textarea>
+</section>
+
+
+
 <!-- deck.navigation snippet -->
 <a href="#" class="deck-prev-link" title="Previous">&#8592;</a>
 <a href="#" class="deck-next-link" title="Next">&#8594;</a>

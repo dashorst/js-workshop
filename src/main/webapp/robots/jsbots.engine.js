@@ -1,4 +1,4 @@
-var d3, jsbots, Worker;
+var d3, jsbots, Worker, console;
 
 (function(){
 	jsbots.engine = {};
@@ -86,7 +86,8 @@ var d3, jsbots, Worker;
 					return checkProjectile(p);
 				});
 				for (name in robots) {
-					robots[name].tick(delta, engine);
+					robots[name].processActions(engine);
+					robots[name].advance(delta);
 				}
 				for (name in robots) {
 					checkRobot(robots[name], elapsed);
@@ -195,19 +196,15 @@ var d3, jsbots, Worker;
 		
 		JSRobot.prototype = jsbots.robot();
 		
-		function updateValue(old, target, delta) {
-			return old + Math.min(delta, Math.max(-delta, target - old));
-		}
-		
-		function range(low, high, value) {
-			return Math.max(low, Math.min(high, value));
-		}
-		
 		function isValid(value) {
 			return value === 0 || value;
 		}
 		
-		function processActions(engine) {
+		JSRobot.prototype.worker = function() {
+			return worker;
+		};
+		
+		JSRobot.prototype.processActions = function(engine) {
 			actions.forEach(function(a) {
 				if (a.type === "speed" && isValid(a.value)) {
 					robot.targetSpeed(a.value);
@@ -221,34 +218,13 @@ var d3, jsbots, Worker;
 					robot.status(a.value);
 				} else if (a.type === "drop") {
 					robot.dropMessage();
-				} else if (a.type === "log") {
+				} else if (a.type === "log" && jsbots.consts.debug) {
 					console.log(a.value);
 				} else if (a.type === "mark") {
 					engine.mark(a);
 				}
 			});
 			actions = [];
-		}
-		
-		JSRobot.prototype.worker = function() {
-			return worker;
-		}
-		
-		JSRobot.prototype.tick = function(delta, engine) {
-			processActions(engine);
-			this.speed(range(
-					jsbots.consts.robotMinSpeed,
-					jsbots.consts.robotMaxSpeed,
-					updateValue(this.speed(), this.targetSpeed(), delta * jsbots.consts.robotAccel))); 
-			this.direction(
-					updateValue(this.direction(), this.targetDirection(), delta * jsbots.consts.robotAngleSpeed));
-			this.turretAngle(
-					updateValue(this.turretAngle(), this.targetTurretAngle(), delta * jsbots.consts.robotTurretSpeed));
-			this.x(this.x() + Math.sin(jsbots.util.toRad(this.direction())) *
-					this.speed() * delta * jsbots.consts.robotSpeedRatio);
-			this.y(this.y() + Math.cos(jsbots.util.toRad(this.direction())) *
-					this.speed() * delta * jsbots.consts.robotSpeedRatio);
-			this.charge(Math.min(jsbots.consts.robotMaxCharge, this.charge() + delta * jsbots.consts.robotChargeRate));
 		};
 		
 		JSRobot.prototype.addAction = function(action) {

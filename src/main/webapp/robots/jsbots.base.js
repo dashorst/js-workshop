@@ -133,6 +133,26 @@ var jsbots;
 			return this;
 		};
 		
+		function updateValue(old, target, delta) {
+			return old + Math.min(delta, Math.max(-delta, target - old));
+		}
+		
+		JSRobot.prototype.advance = function(delta) {
+			this.speed(jsbots.util.inRange(
+					jsbots.consts.robotMinSpeed,
+					jsbots.consts.robotMaxSpeed,
+					updateValue(this.speed(), this.targetSpeed(), delta * jsbots.consts.robotAccel))); 
+			this.direction(
+					updateValue(this.direction(), this.targetDirection(), delta * jsbots.consts.robotAngleSpeed));
+			this.turretAngle(
+					updateValue(this.turretAngle(), this.targetTurretAngle(), delta * jsbots.consts.robotTurretSpeed));
+			this.x(this.x() + Math.sin(jsbots.util.toRad(this.direction())) *
+					this.speed() * delta * jsbots.consts.robotSpeedRatio);
+			this.y(this.y() + Math.cos(jsbots.util.toRad(this.direction())) *
+					this.speed() * delta * jsbots.consts.robotSpeedRatio);
+			this.charge(Math.min(jsbots.consts.robotMaxCharge, this.charge() + delta * jsbots.consts.robotChargeRate));
+		};
+		
 		JSRobot.prototype.fromJSON = function(json) {
 			name = json.name;
 			status = json.status;
@@ -221,5 +241,15 @@ var jsbots;
 	
 	jsbots.util.toRad = function(deg) {
 		return deg*Math.PI/180;
+	};
+	
+	jsbots.util.dist = function(x1, y1, x2, y2) {
+		var dx = x1-x2,
+			dy = y1-y2;
+		return Math.sqrt(dx*dx+dy*dy);
+	};
+	
+	jsbots.util.inRange = function(min, max, value) {
+		return Math.max(min, Math.min(max, value));
 	};
 }());
