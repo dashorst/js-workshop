@@ -135,21 +135,31 @@ var d3, jsbots;
 		}
 		
 		function drawMarks(marks) {
-			var selection, selectionG;
-			selection = arena.selectAll("g.mark").data(marks);
-			selectionG = selection.enter()
-				.append("g")
-				.classed("mark", true);
-			selectionG.append("line")
-				.attr("x1", -10).attr("y1", -10)
-				.attr("x2", 10).attr("y2", 10);
-			selectionG.append("line")
-				.attr("x1", 10).attr("y1", -10)
-				.attr("x2", -10).attr("y2", 10);
+			var selection = arena.selectAll("circle.mark").data(marks);
+			selection.enter()
+				.append("circle")
+				.classed("mark", true)
+				.attr("r", 2);
 			selection.exit().remove();
 			selection
-				.attr("transform", function(m) {return "translate("+m.x+","+(jsbots.consts.arenaHeight-m.y)+")";})
-				.style("stroke", function(m) {return m.color;});
+				.attr("cx", function(m) {return m.x;})
+				.attr("cy", function(m) {return jsbots.consts.arenaHeight-m.y;})
+				.style("fill",function(m) {return m.color;});
+//			var selection, selectionG;
+//			selection = arena.selectAll("g.mark").data(marks);
+//			selectionG = selection.enter()
+//				.append("g")
+//				.classed("mark", true);
+//			selectionG.append("line")
+//				.attr("x1", -10).attr("y1", -10)
+//				.attr("x2", 10).attr("y2", 10);
+//			selectionG.append("line")
+//				.attr("x1", 10).attr("y1", -10)
+//				.attr("x2", -10).attr("y2", 10);
+//			selection.exit().remove();
+//			selection
+//				.attr("transform", function(m) {return "translate("+m.x+","+(jsbots.consts.arenaHeight-m.y)+")";})
+//				.style("stroke", function(m) {return m.color;});
 		}
 		
 		RobotsUI.prototype.draw = function(data) {

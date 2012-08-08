@@ -8,7 +8,9 @@ var d3, jsbots;
 			event = d3.dispatch("start", "tick", "hit", "collision"),
 			worker = pworker,
 			startTime,
-			name;
+			name,
+			robotConstructor = jsbots.api.robot,
+			thisRobot;
 		
 		function Communicator() {
 			pworker.addEventListener("message", this.messageReceived, false);
@@ -23,19 +25,19 @@ var d3, jsbots;
 		}
 		
 		function processTick(data) {
-			var thisRobot, robots, curTime;
+			var robots, curTime;
 			curTime = Date.now();
 			if (!startTime) {
-				startTime = curTime - data.elapsed;
+				startTime = curTime - data.elapsedRaw;
 			}
-			thisRobot = jsbots.api.robot(worker).fromJSON(data.robots[name]);
+			thisRobot.fromJSON(data.robots[name]);
 			robots = objectValues(data.robots)
 				.filter(function(r) {return r.name !== thisRobot.name();})
 				.map(function(r) {return jsbots.robot().fromJSON(r);});
 			thisRobot.events().forEach(function(e) {
 				event[e.type](thisRobot, robots, data, e);
 			});
-			if (curTime - startTime < data.elapsed + 20) {
+			if (curTime - startTime < data.elapsedRaw + data.delta * 2 / jsbots.consts.gameSpeed) {
 				event.tick(thisRobot, robots, data);
 			} else {
 				thisRobot.dropMessage();
@@ -45,6 +47,7 @@ var d3, jsbots;
 		Communicator.prototype.messageReceived = function(e) {
 			if (e.data.type === "start") {
 				name = e.data.name;
+				thisRobot = robotConstructor(worker);
 				event.start(e.data);
 			} else if (e.data.type === "tick") {
 				processTick(e.data);
@@ -55,6 +58,12 @@ var d3, jsbots;
 		
 		Communicator.prototype.name = function() {
 			return name;
+		};
+		
+		Communicator.prototype.robotConstructor = function(pRobotConstructor) {
+			if (!arguments.length) {return robotConstructor;}
+			robotConstructor = pRobotConstructor;
+			return this;
 		};
 		
 		communicator = new Communicator();
@@ -127,6 +136,31 @@ var d3, jsbots;
 			return this;
 		};
 				
+		JSAPIRobot.prototype.project = function(time, rotationSpeed) {
+			var dist, signum, frac, peri, radius, cang, cx, cy, tang;
+			
+			if (rotationSpeed === 0) {
+				dist = this.speed() * jsbots.consts.robotSpeedRatio * time;
+				return {
+					x: this.x() + Math.sin(jsbots.util.toRad(this.direction())) * dist,
+					y: this.y() + Math.cos(jsbots.util.toRad(this.direction())) * dist
+				};
+			} else {
+				signum = rotationSpeed < 0 ? -1 : 1;
+				frac = Math.abs(rotationSpeed/360);
+				peri = this.speed() * jsbots.consts.robotSpeedRatio * time / frac;
+				radius = peri/2/Math.PI;
+				cang = jsbots.util.toRad(this.direction() + signum * 90);
+				cx = this.x() + Math.sin(cang) * radius;
+				cy = this.y() + Math.cos(cang) * radius;
+				tang = cang - Math.PI + jsbots.util.toRad(rotationSpeed);
+				return {
+					x: cx + Math.sin(tang) * radius,
+					y: cy + Math.cos(tang) * radius
+				};
+			}
+		};
+
 		JSAPIRobot.prototype.distance = function(other) {
 			return jsbots.util.dist(robot.x(), robot.y(), other.x(), other.y());
 		};

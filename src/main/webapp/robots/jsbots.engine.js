@@ -77,7 +77,7 @@ var d3, jsbots, Worker, console;
 				name,
 				delta = elapsed - lastTick,
 				robotsJSON = {};
-			if (delta > 10) {
+			if (delta > 1000 / jsbots.consts.maxFrameRate) {
 				tickCount++;
 				lastTick = elapsed;
 				projectiles = projectiles.filter(function(p){
@@ -106,6 +106,7 @@ var d3, jsbots, Worker, console;
 					tickCount: tickCount,
 					delta: delta,
 					elapsed: elapsed,
+					elapsedRaw: elapsedRaw,
 					projectiles: projectiles,
 					marks: marks,
 					robots: robotsJSON

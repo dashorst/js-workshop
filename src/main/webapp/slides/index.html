@@ -234,6 +234,85 @@ console.log(arr.sort());
 console.log(arr.sort(comp));</textarea>
 </section>
 
+<section class="slide" id="functions-as-objects">
+	<h2>Functies zijn objecten</h2>
+	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var comp = function(a, b) {
+   return a - b;
+};
+comp.key = "value";
+comp.key2 = "value2";
+console.log(comp.key, comp.key2);
+console.log(comp.toString());</textarea>
+</section>
+
+<section class="slide" id="functions-scope">
+	<h2>Functies bepalen scope</h2>
+	<ol>
+		<li>
+			<h3>Alleen functies bepalen scope</h3>
+			Accolades en haakjes dus niet. Binnen bijvoorbeeld een <code>if</code> geldt dezelfde scope als er buiten.
+		</li>
+		
+		<li>
+			<h3>Buiten functies geldt de global scope</h3>
+			Dit is in principe <code>window</code>. Het gebruik van de global scope is gevaarlijk vanwege mogelijke conflicten. 
+		</li>
+
+		<li>
+			<h3>Locatie is niet belangrijk</h3>
+			Een <code>var</code> of <code>function</code> kan gebruikt worden voor hij gedeclareerd is.
+			Daarom: zet alle vars vooraan je functie.			
+		</li>
+	</ol>
+</section>
+
+<section class="slide" id="functions-scope-example">
+	<h2>Functies bepalen scope</h2>
+	<textarea class="code" mode="javascript" runnable="true" style="display: none;">function top(x) {
+   var a = 3;
+   console.log(a, b, x);
+   b = 5;
+   console.log(a, b, x);
+   nested(x + 5);
+
+   function nested(y) {
+      if (y < 4) {
+         var c = 10;
+      } else {
+         c = 11;
+      }
+      console.log(a, b, c, x, y);
+   }
+   var b;
+};
+top(3);</textarea>
+</section>
+
+<section class="slide" id="functions-anonymous-scope">
+	<h2>Annonieme scope</h2>
+	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var globaal;
+	
+(function(){
+   var dit = "lokaal";
+   globaal = {};
+   globaal.waarde = "globale waarde";
+   globaal.functie = function() {
+      console.log(dit, globaal.waarde);
+   };
+}());
+
+globaal.functie();</textarea>
+</section>
+
+<section class="slide" id="functions-closure">
+	<h2>Closures</h2>
+	<textarea class="code" mode="javascript" runnable="true" style="display: none;">function kleinerDan(val1) {
+   return function(val2) {return val2 < val1;};
+}
+var kleinerDan3 = kleinerDan(3);
+console.log(kleinerDan3(5), kleinerDan3(2));</textarea>
+</section>
+
 
 
 <!-- deck.navigation snippet -->
