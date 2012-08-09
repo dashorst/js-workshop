@@ -16,14 +16,6 @@ var d3, jsbots;
 			pworker.addEventListener("message", this.messageReceived, false);
 		}
 		
-		function objectValues(obj) {
-			var cur, ret = [];
-			for (cur in obj) {
-				ret.push(obj[cur]);
-			}
-			return ret;
-		}
-		
 		function processTick(data) {
 			var robots, curTime;
 			curTime = Date.now();
@@ -31,7 +23,7 @@ var d3, jsbots;
 				startTime = curTime - data.elapsedRaw;
 			}
 			thisRobot.fromJSON(data.robots[name]);
-			robots = objectValues(data.robots)
+			robots = jsbots.util.toArray(data.robots)
 				.filter(function(r) {return r.name !== thisRobot.name();})
 				.map(function(r) {return jsbots.robot().fromJSON(r);});
 			thisRobot.events().forEach(function(e) {

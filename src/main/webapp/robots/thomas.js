@@ -19,17 +19,19 @@ thomas = function(pworker) {
 	return robot;
 };
 
+var simulator = jsbots.simulator();
+
 c = jsbots.api.communicator(this).robotConstructor(thomas);
 c.on("tick", function(robot, others, data) {
 	var index, count, dangers, minDanger, minDangerDir, minDangerIndex, 
-		curDir, dirDiff, loc, closest, time, a,
-		simulator = jsbots.simulator(others, data);
+		curDir, dirDiff, loc, closest, time, a, sx, sy, curDanger;
 	
+	simulator.update(others, data);
 	closest = others.reduce(ordering(robot.distance));
 	time = robot.distance(closest) * closest.speed() *
 		jsbots.consts.robotSpeedRatio / jsbots.consts.projectileSpeedRatio;
-	var sx = closest.x() - robot.x() + Math.sin(jsbots.util.toRad(closest.direction())) * time;
-	var sy = closest.y() - robot.y() + Math.cos(jsbots.util.toRad(closest.direction())) * time;
+	sx = closest.x() - robot.x() + Math.sin(jsbots.util.toRad(closest.direction())) * time;
+	sy = closest.y() - robot.y() + Math.cos(jsbots.util.toRad(closest.direction())) * time;
 	a = jsbots.util.relativeTo(robot.direction(), jsbots.util.toDeg(Math.atan2(sx, sy))) - robot.direction();
 	a = jsbots.util.angleDiff(a, robot.turretAngle()) + robot.turretAngle();
 	robot.mark("green", sx + robot.x(), sy + robot.y());
@@ -50,7 +52,7 @@ c.on("tick", function(robot, others, data) {
 		for (index=-20; index<=20; index++) {
 			curDir = index/20*jsbots.consts.robotAngleSpeed*count*inc;
 			loc = robot.project(inc*count, curDir);
-			var curDanger = simulator.danger(loc.x, loc.y);
+			curDanger = simulator.danger(loc.x, loc.y);
 			dangers[index] += curDanger * Math.sqrt(total - count + 1);
 			robot.mark("rgb("+Math.min(255, curDanger*15).toFixed(0)+",50,50)", loc.x, loc.y);
 		}

@@ -1,31 +1,50 @@
 var d3, jsbots;
 
 (function(){
-	jsbots.simulator = function(others, data) {
+	jsbots.simulator = function() {
 		var simulator,
-			robots,
+			robots = {},
 			projectiles;
 		
 		function RobotsSimulator() {
-			robots = others.map(function(r) {return jsbots.robot().fromJSON(r.getJSON());});
+		}
+		
+		RobotsSimulator.prototype.update = function(others, data) {
+			var oldRobots = robots;
+			robots = {};
+			others.forEach(function(r) {
+				var oldRobot = oldRobots[r.name()];
+				if (oldRobot) {
+					robots[r.name()] = oldRobot.fromJSON(r.getJSON(), data.delta);
+				} else {
+					robots[r.name()] = jsbots.simulator.robot().fromJSON(r.getJSON(), data.delta);
+				}
+			});
 			projectiles = data.projectiles.map(function(p) {
 				return {charge:p.charge, direction: p.direction, x:p.x, y:p.y};
 			});
-		}
+		};
 		
 		RobotsSimulator.prototype.advance = function(delta) {
-			robots.forEach(function(r) {
-				r.advance(delta);
-			});
-			projectiles.forEach(function(p) {
-				p.x += Math.sin(jsbots.util.toRad(p.direction)) * delta * jsbots.consts.projectileSpeedRatio;
-				p.y += Math.cos(jsbots.util.toRad(p.direction)) * delta * jsbots.consts.projectileSpeedRatio;
-			});
+			var curDelta, totalDelta = 0;
+			while (totalDelta < delta) {
+				curDelta = Math.min(1000 / jsbots.consts.maxFrameRate, delta - totalDelta);
+				totalDelta += curDelta;
+				jsbots.util.toArray(robots).forEach(function(r) {
+					r.advance(curDelta);
+				});
+				projectiles.forEach(function(p) {
+					p.x += Math.sin(jsbots.util.toRad(p.direction)) *
+						curDelta * jsbots.consts.projectileSpeedRatio;
+					p.y += Math.cos(jsbots.util.toRad(p.direction)) *
+						curDelta * jsbots.consts.projectileSpeedRatio;
+				});
+			}
 		};
 		
 		RobotsSimulator.prototype.danger = function(x, y) {
 			var ret = 0;
-			robots.forEach(function(r) {
+			jsbots.util.toArray(robots).forEach(function(r) {
 				var dist = jsbots.util.dist(x, y, r.x(), r.y()) - 60;
 				ret += jsbots.util.inRange(0, 10, (90 - dist)/9);
 			});
@@ -41,15 +60,41 @@ var d3, jsbots;
 		};
 		
 		RobotsSimulator.prototype.robot = function(name) {
-			var robot;
-			for (robot in robots) {
-				if (robots[robot].name() === name) {
-					return robots[robot];
-				}
-			}
+			return robots[name];
 		};
 		
 		simulator = new RobotsSimulator();
 		return simulator;
+	};
+	
+	jsbots.simulator.robot = function() {
+		var robot,
+			directionBackup = 0,
+			previousDirectionBackup = 0,
+			rotationalSpeed;
+		
+		function superPrototype() {
+			return Object.getPrototypeOf(Object.getPrototypeOf(robot));
+		}
+		
+		function JSSimRobot() {
+		}
+
+		JSSimRobot.prototype = jsbots.robot();
+		
+		JSSimRobot.prototype.advance = function(delta) {
+			this.targetDirection(this.direction() + rotationalSpeed * delta);
+			return superPrototype().advance.apply(this, arguments);
+		};
+		
+		JSSimRobot.prototype.fromJSON = function(json, delta) {
+			previousDirectionBackup = directionBackup;
+			directionBackup = json.direction;
+			rotationalSpeed = (directionBackup - previousDirectionBackup) / delta;
+			return superPrototype().fromJSON.call(this, json);
+		};
+		
+		robot = new JSSimRobot();
+		return robot;
 	};
 }());

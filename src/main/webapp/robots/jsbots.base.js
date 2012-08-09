@@ -253,4 +253,12 @@ var jsbots;
 	jsbots.util.inRange = function(min, max, value) {
 		return Math.max(min, Math.min(max, value));
 	};
+	
+	jsbots.util.toArray = function(obj) {
+		var cur, ret = [];
+		for (cur in obj) {
+			ret.push(obj[cur]);
+		}
+		return ret;
+	};
 }());
