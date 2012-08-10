@@ -9,7 +9,7 @@ var d3, jsbots;
 		function RobotsSimulator() {
 		}
 		
-		RobotsSimulator.prototype.update = function(others, data) {
+		RobotsSimulator.prototype.tick = function(self, others, data) {
 			var oldRobots = robots;
 			robots = {};
 			others.forEach(function(r) {
@@ -25,20 +25,32 @@ var d3, jsbots;
 			});
 		};
 		
-		RobotsSimulator.prototype.advance = function(delta) {
+		function advanceSmallStep(delta) {
+			jsbots.util.toArray(robots).forEach(function(r) {
+				r.advance(delta);
+			});
+			projectiles.forEach(function(p) {
+				p.x += Math.sin(jsbots.util.toRad(p.direction)) *
+					delta * jsbots.consts.projectileSpeedRatio;
+				p.y += Math.cos(jsbots.util.toRad(p.direction)) *
+					delta * jsbots.consts.projectileSpeedRatio;
+			});
+		}
+
+		function advance(delta) {
 			var curDelta, totalDelta = 0;
 			while (totalDelta < delta) {
 				curDelta = Math.min(1000 / jsbots.consts.maxFrameRate, delta - totalDelta);
 				totalDelta += curDelta;
-				jsbots.util.toArray(robots).forEach(function(r) {
-					r.advance(curDelta);
-				});
-				projectiles.forEach(function(p) {
-					p.x += Math.sin(jsbots.util.toRad(p.direction)) *
-						curDelta * jsbots.consts.projectileSpeedRatio;
-					p.y += Math.cos(jsbots.util.toRad(p.direction)) *
-						curDelta * jsbots.consts.projectileSpeedRatio;
-				});
+				advanceSmallStep(curDelta);
+			}
+		}
+		
+		RobotsSimulator.prototype.simulate = function(steps, stepSize, process) {
+			var step = 1;
+			for (; step<=steps; step++) {
+				advance(stepSize);
+				process(step, step * stepSize, this.robots(), projectiles);
 			}
 		};
 		
@@ -63,14 +75,18 @@ var d3, jsbots;
 			return robots[name];
 		};
 		
+		RobotsSimulator.prototype.robots = function() {
+			return jsbots.util.toArray(robots);
+		};
+		
 		simulator = new RobotsSimulator();
 		return simulator;
 	};
 	
 	jsbots.simulator.robot = function() {
 		var robot,
-			directionBackup = 0,
-			previousDirectionBackup = 0,
+			gxdirection = [0],
+			deltas = [],
 			rotationalSpeed;
 		
 		function superPrototype() {
@@ -88,9 +104,16 @@ var d3, jsbots;
 		};
 		
 		JSSimRobot.prototype.fromJSON = function(json, delta) {
-			previousDirectionBackup = directionBackup;
-			directionBackup = json.direction;
-			rotationalSpeed = (directionBackup - previousDirectionBackup) / delta;
+			rotationalSpeed = (json.direction - gxdirection[0]) /
+				deltas.reduce(function(r, l){return r + l;}, delta);
+			gxdirection.push(json.direction);
+			deltas.push(delta);
+			if (gxdirection.length > 4) {
+				gxdirection.splice(0, 1);
+			}
+			if (deltas.length > 3) {
+				deltas.splice(0, 1);
+			}
 			return superPrototype().fromJSON.call(this, json);
 		};
 		

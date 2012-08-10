@@ -88,6 +88,9 @@ var d3, jsbots, Worker, console;
 				for (name in robots) {
 					robots[name].processActions(engine);
 					robots[name].advance(delta);
+					if (!running) {
+						robots[name].targetSpeed(0);
+					}
 				}
 				for (name in robots) {
 					checkRobot(robots[name], elapsed);
@@ -150,8 +153,8 @@ var d3, jsbots, Worker, console;
 				projectiles.push({
 					charge: charge,
 					direction: dir,
-					x: robot.x() + Math.sin(jsbots.util.toRad(dir)) * 45,
-					y: robot.y() + Math.cos(jsbots.util.toRad(dir)) * 45
+					x: robot.x() + Math.sin(jsbots.util.toRad(dir)) * jsbots.consts.projectileStartDistance,
+					y: robot.y() + Math.cos(jsbots.util.toRad(dir)) * jsbots.consts.projectileStartDistance
 				});
 				robot.charge(robot.charge() - charge);
 			}
@@ -161,7 +164,8 @@ var d3, jsbots, Worker, console;
 			marks.push({
 				color: m.color,
 				x: m.x,
-				y: m.y
+				y: m.y,
+				size: m.size
 			});
 		};
 		

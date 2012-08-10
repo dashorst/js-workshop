@@ -39,7 +39,7 @@ var d3, jsbots;
 		Communicator.prototype.messageReceived = function(e) {
 			if (e.data.type === "start") {
 				name = e.data.name;
-				thisRobot = robotConstructor(worker);
+				thisRobot = robotConstructor(worker, communicator);
 				event.start(e.data);
 			} else if (e.data.type === "tick") {
 				processTick(e.data);
@@ -63,9 +63,14 @@ var d3, jsbots;
 		return communicator;
 	};
 	
-	jsbots.api.robot = function(pworker) {
+	jsbots.api.robot = function(pworker, communicator) {
 		var robot,
-			worker = pworker;
+			worker = pworker,
+			currentSpeed,
+			currentDirection,
+			currentTurretAngle,
+			aimAt,
+			fireCharge;
 		
 		function superPrototype() {
 			return Object.getPrototypeOf(Object.getPrototypeOf(robot));
@@ -75,6 +80,38 @@ var d3, jsbots;
 		}
 		
 		JSAPIRobot.prototype = jsbots.robot();
+		
+		JSAPIRobot.prototype.process = function(self, others, data) {
+			var aimTarget, angle, charge;
+			
+			self.ai(others, data);
+			aimTarget = aimAt ? aimAt(others, data) : undefined;
+			if (aimTarget) {
+				angle = jsbots.util.angleDiff(
+						jsbots.util.toDeg(Math.atan2(aimTarget.x - self.x(), aimTarget.y - self.y())),
+						self.currentDirection());
+				self.turretAngle(jsbots.util.relativeTo(self.turretAngle(), angle));
+			}
+			charge = fireCharge ? fireCharge(others, data) : undefined;
+			if (charge) {
+				self.fire(charge);
+			}
+		};
+
+		JSAPIRobot.prototype.ai = function(others, data) {
+		}
+		
+		JSAPIRobot.prototype.currentSpeed = function() {
+			return currentSpeed;
+		};
+		
+		JSAPIRobot.prototype.currentDirection = function() {
+			return currentDirection;
+		};
+		
+		JSAPIRobot.prototype.currentTurretAngle = function() {
+			return currentTurretAngle;
+		};
 		
 		JSAPIRobot.prototype.speed = function(nspeed) {
 			if (arguments.length === 1) {
@@ -97,6 +134,18 @@ var d3, jsbots;
 			return superPrototype().turretAngle.apply(this, arguments);
 		};
 		
+		JSAPIRobot.prototype.aimAt = function(naimAt) {
+			if (!arguments.length) {return aimAt;}
+			aimAt = naimAt;
+			return this;
+		};
+		
+		JSAPIRobot.prototype.fireCharge = function(nfireCharge) {
+			if (!arguments.length) {return fireCharge;}
+			fireCharge = nfireCharge;
+			return this;
+		};
+		
 		JSAPIRobot.prototype.status = function(nstatus) {
 			if (arguments.length === 1) {
 				worker.postMessage({type: "status", value: nstatus});
@@ -114,8 +163,16 @@ var d3, jsbots;
 			return this;
 		};
 		
-		JSAPIRobot.prototype.mark = function(color, x, y) {
-			worker.postMessage({type: "mark", color: color, x: x, y: y});
+		JSAPIRobot.prototype.mark = function(color, x, y, size) {
+			if (jsbots.consts.debug) {
+				worker.postMessage({
+					type: "mark",
+					color: color,
+					x: x,
+					y: y,
+					size: (size ? size : 2)
+				});
+			}
 			return this;
 		};
 		
@@ -151,6 +208,13 @@ var d3, jsbots;
 					y: cy + Math.cos(tang) * radius
 				};
 			}
+		};
+		
+		JSAPIRobot.prototype.fromJSON = function(json) {
+			currentSpeed = json.speed;
+			currentDirection = json.direction;
+			currentTurretAngle = json.turretAngle;
+			return superPrototype().fromJSON.apply(this, arguments);
 		};
 
 		JSAPIRobot.prototype.distance = function(other) {

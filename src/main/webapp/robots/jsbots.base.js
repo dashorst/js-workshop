@@ -200,7 +200,7 @@ var jsbots;
 		arenaWidth: 1500,
 		arenaHeight: 900,
 		gameSpeed: 1,
-		maxFrameRate: 50,
+		maxFrameRate: 40,
 		robotSize: 30,
 		robotMaxSpeed: 15,
 		robotMinSpeed: -5,
@@ -213,6 +213,7 @@ var jsbots;
 		robotHitpoints: 200,
 		wallDamage: 10,
 		projectileSpeedRatio: 0.20,
+		projectileStartDistance: 45,
 		debug: true
 	};
 	
