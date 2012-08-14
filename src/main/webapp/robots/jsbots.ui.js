@@ -126,10 +126,10 @@ var d3, jsbots;
 			var selection = arena.selectAll("circle.projectile").data(projectiles);
 			selection.enter()
 				.append("circle")
-				.classed("projectile", true)
-				.attr("r", function(p) {return Math.sqrt(p.charge)*2;});
+				.classed("projectile", true);
 			selection.exit().remove();
 			selection
+				.attr("r", function(p) {return Math.sqrt(p.charge)*2;})
 				.attr("cx", function(p) {return p.x;})
 				.attr("cy", function(p) {return jsbots.consts.arenaHeight-p.y;});
 		}

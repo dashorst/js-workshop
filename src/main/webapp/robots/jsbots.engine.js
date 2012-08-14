@@ -81,8 +81,10 @@ var d3, jsbots, Worker, console;
 				tickCount++;
 				lastTick = elapsed;
 				projectiles = projectiles.filter(function(p){
-					p.x += Math.sin(jsbots.util.toRad(p.direction)) * delta * jsbots.consts.projectileSpeedRatio;
-					p.y += Math.cos(jsbots.util.toRad(p.direction)) * delta * jsbots.consts.projectileSpeedRatio;
+					p.x += Math.sin(jsbots.util.toRad(p.direction)) *
+						p.speed * delta * jsbots.consts.projectileSpeedRatio;
+					p.y += Math.cos(jsbots.util.toRad(p.direction)) *
+						p.speed * delta * jsbots.consts.projectileSpeedRatio;
 					return checkProjectile(p);
 				});
 				for (name in robots) {
@@ -119,8 +121,7 @@ var d3, jsbots, Worker, console;
 					if (running) {
 						engine.stop();
 					} else {
-						return projectiles.length === 0 &&
-							robots[Object.getOwnPropertyNames(robots)[0]].speed() === 0;
+						return robots[Object.getOwnPropertyNames(robots)[0]].speed() === 0;
 					}
 				}
 			}
@@ -147,16 +148,23 @@ var d3, jsbots, Worker, console;
 			engine.on("tick."+robot.name(), null);
 		};
 		
-		RobotsEngine.prototype.fireProjectile = function(robot, charge) {
-			var dir = robot.direction() + robot.turretAngle();
-			if (charge >= 5 && robot.charge() >= charge) {
+		RobotsEngine.prototype.fireProjectile = function(robot, charge, speed) {
+			var dir;
+			if (speed === 0) {
+				dir = robot.direction() - 180;
+			} else {
+				dir = robot.direction() + robot.turretAngle();
+			}
+			if ((speed === 0 && charge >= 5 && robot.charge() >= charge / 3) ||
+				(charge * speed >= 5 && robot.charge() >= charge * speed && speed >= 0.5 && speed <= 3)) {
 				projectiles.push({
 					charge: charge,
+					speed: speed,
 					direction: dir,
 					x: robot.x() + Math.sin(jsbots.util.toRad(dir)) * jsbots.consts.projectileStartDistance,
 					y: robot.y() + Math.cos(jsbots.util.toRad(dir)) * jsbots.consts.projectileStartDistance
 				});
-				robot.charge(robot.charge() - charge);
+				robot.charge(robot.charge() - (speed === 0 ? charge / 3 : charge * speed));
 			}
 		};
 		
@@ -179,6 +187,7 @@ var d3, jsbots, Worker, console;
 		RobotsEngine.prototype.stop = function() {
 			var name;
 			running = false;
+			projectiles = [];
 			for (name in robots) {
 				robots[name].targetSpeed(0).worker().postMessage({type: "stop"});
 				engine.on("tick."+name, null);
@@ -217,8 +226,8 @@ var d3, jsbots, Worker, console;
 					robot.targetDirection(a.value);
 				} else if (a.type === "turretAngle" && isValid(a.value)) {
 					robot.targetTurretAngle(a.value);
-				} else if (a.type === "fire" && isValid(a.value)) {
-					engine.fireProjectile(robot, a.value);
+				} else if (a.type === "fire" && isValid(a.charge) && isValid(a.speed)) {
+					engine.fireProjectile(robot, a.charge, a.speed);
 				} else if (a.type === "status") {
 					robot.status(a.value);
 				} else if (a.type === "drop") {

@@ -8,6 +8,7 @@ var d3, jsbots;
 			event = d3.dispatch("start", "tick", "hit", "collision"),
 			worker = pworker,
 			startTime,
+			totalTime = 0,
 			name,
 			robotConstructor = jsbots.api.robot,
 			thisRobot;
@@ -29,11 +30,13 @@ var d3, jsbots;
 			thisRobot.events().forEach(function(e) {
 				event[e.type](thisRobot, robots, data, e);
 			});
-			if (curTime - startTime < data.elapsedRaw + data.delta * 2 / jsbots.consts.gameSpeed) {
+			if (curTime - startTime < data.elapsedRaw + data.delta * 2 / jsbots.consts.gameSpeed &&
+					totalTime < data.elapsedRaw * 0.4) {
 				event.tick(thisRobot, robots, data);
 			} else {
 				thisRobot.dropMessage();
 			}
+			totalTime += (Date.now() - curTime); 
 		}
 		
 		Communicator.prototype.messageReceived = function(e) {
@@ -94,7 +97,10 @@ var d3, jsbots;
 			}
 			charge = fireCharge ? fireCharge(others, data) : undefined;
 			if (charge) {
-				self.fire(charge);
+				if (typeof charge === "number") {
+					charge = {charge: charge, speed: 1};
+				}
+				self.fire(charge.charge, charge.speed);
 			}
 		};
 
@@ -176,11 +182,23 @@ var d3, jsbots;
 			return this;
 		};
 		
-		JSAPIRobot.prototype.fire = function(charge) {
+		JSAPIRobot.prototype.mine = function(charge) {
 			if (!charge) {
 				charge = robot.charge();
 			}
-			worker.postMessage({type: "fire", value: charge});
+			worker.postMessage({type: "fire", charge: charge * 3, speed: 0});
+			robot.charge(robot.charge() - charge);
+			return this;
+		};
+		
+		JSAPIRobot.prototype.fire = function(charge, speed) {
+			if (!speed) {
+				speed = 1;
+			}
+			if (!charge) {
+				charge = robot.charge();
+			}
+			worker.postMessage({type: "fire", charge: charge/speed, speed: speed});
 			robot.charge(robot.charge() - charge);
 			return this;
 		};

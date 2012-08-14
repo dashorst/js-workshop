@@ -4,7 +4,8 @@ var d3, jsbots;
 	jsbots.simulator = function() {
 		var simulator,
 			robots = {},
-			projectiles;
+			projectiles,
+			addDanger = function(x, y){return 0;};
 		
 		function RobotsSimulator() {
 		}
@@ -21,7 +22,7 @@ var d3, jsbots;
 				}
 			});
 			projectiles = data.projectiles.map(function(p) {
-				return {charge:p.charge, direction: p.direction, x:p.x, y:p.y};
+				return {charge:p.charge, direction: p.direction, speed:p.speed, x:p.x, y:p.y};
 			});
 		};
 		
@@ -31,9 +32,9 @@ var d3, jsbots;
 			});
 			projectiles.forEach(function(p) {
 				p.x += Math.sin(jsbots.util.toRad(p.direction)) *
-					delta * jsbots.consts.projectileSpeedRatio;
+					p.speed * delta * jsbots.consts.projectileSpeedRatio;
 				p.y += Math.cos(jsbots.util.toRad(p.direction)) *
-					delta * jsbots.consts.projectileSpeedRatio;
+					p.speed * delta * jsbots.consts.projectileSpeedRatio;
 			});
 		}
 
@@ -68,7 +69,14 @@ var d3, jsbots;
 			ret += jsbots.util.inRange(0, 30, (40 - y)/3);
 			ret += jsbots.util.inRange(0, 30, (40 - (jsbots.consts.arenaWidth-x))/3);
 			ret += jsbots.util.inRange(0, 30, (40 - (jsbots.consts.arenaHeight-y))/3);
+			ret += addDanger.call(this, x, y);
 			return ret;
+		};
+		
+		RobotsSimulator.prototype.addDanger = function(paddDanger) {
+			if (!arguments.length) {return addDanger;}
+			addDanger = paddDanger;
+			return this;
 		};
 		
 		RobotsSimulator.prototype.robot = function(name) {
@@ -77,6 +85,10 @@ var d3, jsbots;
 		
 		RobotsSimulator.prototype.robots = function() {
 			return jsbots.util.toArray(robots);
+		};
+
+		RobotsSimulator.prototype.projectiles = function() {
+			return projectiles;
 		};
 		
 		simulator = new RobotsSimulator();

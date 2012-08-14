@@ -9,7 +9,7 @@ thomas = function(pworker, communicator) {
 		simulator = jsbots.simulator(),
 		target,
 		lastFire = 0;
-
+	
 	function Thomas() {
 		communicator.on("tick.sim", simulator.tick);
 		communicator.on("tick.robot", this.process);
@@ -22,11 +22,19 @@ thomas = function(pworker, communicator) {
 	function ordering(prop) {
 		return function(a, b) {return prop(a) < prop(b) ? a : b;};
 	}
+	
+	function dangerFunction(x, y) {
+		var mindist = this.robots().reduce(function(m, r) {
+			return Math.min(m, jsbots.util.dist(x, y, r.x(), r.y()));
+		}, 2000);
+		return Math.min(5, 1000 / mindist);
+	}
 
 	Thomas.prototype.ai = function(others, data) {
 		var index, count, dangers, minDanger, minDangerDir, minDangerIndex, 
-		curDir, dirDiff, loc, a, sx, sy, curDanger, range;
+		curDir, loc, curDanger;
 	
+		//simulator.addDanger(dangerFunction);
 		robot.speed(15);
 		
 		target = undefined;
@@ -35,7 +43,7 @@ thomas = function(pworker, communicator) {
 			dangers[index] = 0;
 		}
 		simulator.simulate(total, inc, function(step, time, robots){
-			range = time * jsbots.consts.projectileSpeedRatio + jsbots.consts.projectileStartDistance;
+			var range = time * jsbots.consts.projectileSpeedRatio + jsbots.consts.projectileStartDistance;
 			robots.forEach(function(r) {
 				var inrange = jsbots.util.dist(r.x(), r.y(), robot.x(), robot.y()) < range;
 				if (inrange && !target) {
@@ -78,9 +86,8 @@ thomas = function(pworker, communicator) {
 		if ((target && robot.charge() > 5 && data.elapsed > lastFire + 75 && diff < 2)
 				|| robot.charge() === jsbots.consts.robotMaxCharge) {
 			lastFire = data.elapsed;
-			return 5;
+			return {charge: 5, speed: 1};
 		}
-		return 0;
 	};
 	
 	robot = new Thomas();
