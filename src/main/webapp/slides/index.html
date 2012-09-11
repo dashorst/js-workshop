@@ -90,7 +90,7 @@
 		<span class="not-in-java">dynamic</span>, <span class="not-in-java">weakly typed</span> and has
 		<span class="not-in-java">first-class functions</span>. It is a <span class="not-in-java">multi-paradigm
 		language</span>, supporting <span class="also-in-java">object-oriented</span>,
-		<span class="not-in-java">imperative</span>, and <span class="not-in-java">functional programming</span>
+		<span class="also-in-java">imperative</span>, and <span class="not-in-java">functional programming</span>
 		styles.</blockquote>
 	<h3 class="slide not-in-java" id="basics-not-java-highlight">Niet in Java</h3>
 	<h3 class="slide also-in-java" id="basics-also-java-highlight">Wel in Java</h3>
@@ -186,16 +186,34 @@ console.log(arr.map(function(v){return v*2;}));</textarea>
 
 <section class="slide" id="basics-exercise">
 	<h2>Creëer een robot</h2>
-	<div class="code" mode="javascript" style="display: none;">var jsbots, c, importScripts;
+	<div style="margin-bottom: 20px">
+	<div class="code" mode="javascript" style="display: none;">var jsbots, importScripts, myrobot;
 
 importScripts("jsbots.worker.js");
 
-c = jsbots.api.communicator(this);
-c.on("tick", function(robot, others, data) {
-    /* code goes here */
-});</div>
+myrobot = function(pworker, communicator) {
+	var robot;
+	
+	function MyRobot() {
+		communicator.on("tick.robot", this.process);
+	}
+	
+	MyRobot.prototype = jsbots.api.robot(pworker, communicator);
+	
+	MyRobot.prototype.ai = function(others, data) {
+		robot.speed(10);
+		robot.direction(robot.direction() + 5);
+	};
+	
+	robot = new MyRobot();
+	return robot;
+}
+
+jsbots.api.communicator(this).robotConstructor(myrobot);</div>
+	</div>
+	<div>
 	<div class="code" mode="javascript" style="display: none;">/* in jsbot.controller.js */
-engine.addRobot("robotnaam", "limegreen");</div>
+engine.addRobot("robotnaam", "limegreen");</div></div>
 </section>
 
 <section class="slide" id="functions-title">
@@ -226,12 +244,16 @@ engine.addRobot("robotnaam", "limegreen");</div>
 
 <section class="slide" id="functions-first-class">
 	<h2>Functies als First-class citizen</h2>
+	<div style="margin-bottom: 20px">
+	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var arr = [5, 4, 30, 22, -2, 15, -6, -30];
+console.log(arr.sort());</textarea>
+	</div>
+	<div>
 	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var comp = function(a, b) {
    return a - b;
 };
 var arr = [5, 4, 30, 22, -2, 15, -6, -30];
-console.log(arr.sort());
-console.log(arr.sort(comp));</textarea>
+console.log(arr.sort(comp));</textarea></div>
 </section>
 
 <section class="slide" id="functions-as-objects">
@@ -313,6 +335,129 @@ var kleinerDan3 = kleinerDan(3);
 console.log(kleinerDan3(5), kleinerDan3(2));</textarea>
 </section>
 
+<section class="slide" id="functions-exercise">
+	<h2>Schiet een charge</h2>
+	<div class="code" mode="javascript" style="display: none;">function MyRobot() {
+   this.aimAt(function(others, data) {
+      return {x:600, y: 400};
+   });
+   this.fireCharge(function(others, data) {
+      return {charge: 5, speed: 1};
+   });
+}</div>
+</section>
+
+<section class="slide" id="prototype-title">
+	<h1>Prototypes</h1>
+</section>
+
+<section class="slide" id="prototype-constructors">
+	<h2>Constructor functies</h2>
+	<ol>
+		<li>
+			<h3>Normale functie, aangeroepen met <code>new</code></h3>
+			Conventie is om de naam met een hoofdletter te schrijven
+		</li>
+		
+		<li>
+			<h3>Maakt een nieuwe instance van de functie</h3>
+		</li>
+	</ol>
+	
+	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var klaas, piet;
+function Persoon(naam) {
+   this.naam = naam;
+}
+
+klaas = new Persoon("Klaas");
+piet = new Persoon("Piet");
+console.log(klaas, piet);</textarea>
+</section>
+
+<section class="slide" id="prototype-property">
+	<h2>Functie prototypes</h2>
+	<ol>
+		<li>
+			<h3>Bepaalt het prototype van het object</h3>
+			M.a.w. de properties en functies die het object bepalen
+		</li>
+		
+		<li>
+			<h3>Aanpasbaar via de <code>prototype</code> property</h3>
+			Dit is een property van de constructor function
+		</li>
+	</ol>
+	
+	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var klaas, piet;
+function Persoon(naam) { this.naam = naam; }
+
+Persoon.prototype.praat = function(zin) {
+   console.log(this.naam+" zegt: "+zin);
+} 
+
+klaas = new Persoon("Klaas");
+piet = new Persoon("Piet");
+klaas.praat("Hello");
+piet.praat("world!");</textarea>
+</section>
+
+<section class="slide" id="prototype-chain">
+	<h2>Prototype chain</h2>
+	<ol>
+		<li>
+			<h3><code>prototype</code> kan een ander prototype extenden</h3>
+			Assign <code>prototype</code> een <code>new</code> instance van een constructor
+		</li>
+		
+		<li>
+			<h3>Erft alle properties van het andere prototype</h3>
+			Een soort class-inheritance, maar dan anders
+		</li>
+	</ol>
+	
+	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var klaas, piet;
+function Persoon(naam) { this.naam = naam; }
+Persoon.prototype.praat = function(zin) { console.log(this.naam+" zegt: "+zin); }
+
+function Boss() {
+}
+Boss.prototype = new Persoon("Boss");
+
+Boss.prototype.kick = function(slaaf) {
+   console.log("Boss kicks "+slaaf);
+}
+
+baas = new Boss();
+baas.praat("Hello");
+baas.kick("Piet");</textarea>
+</section>
+
+<section class="slide" id="prototype-extend">
+	<h2>Extend Prototypes</h2>
+	<ol>
+		<li>
+			<h3><code>prototype</code> kan ook uitgebreid worden voor bestaande instances en typen</h3>
+			Standaard typen uitbreiden wordt gezien als bad practice
+		</li>
+	</ol>
+	
+	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var klaas, piet;
+function Persoon(naam) { this.naam = naam; }
+
+klaas = new Persoon("Klaas");
+piet = new Persoon("Piet");
+
+console.log("klaas.praat = ", klaas.praat);
+
+Persoon.prototype.praat = function(zin) {
+   console.log(this.naam+" zegt: "+zin);
+}
+ 
+console.log("klaas.praat = ", klaas.praat);
+
+klaas.praat("Hello");
+piet.praat("world!");</textarea>
+</section>
 
 
 <!-- deck.navigation snippet -->

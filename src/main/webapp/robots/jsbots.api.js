@@ -105,7 +105,7 @@ var d3, jsbots;
 		};
 
 		JSAPIRobot.prototype.ai = function(others, data) {
-		}
+		};
 		
 		JSAPIRobot.prototype.currentSpeed = function() {
 			return currentSpeed;

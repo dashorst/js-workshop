@@ -1,6 +1,6 @@
 var jsbots, thomas, importScripts;
 
-var inc = 150, total = 20;
+var inc = 150, total = 25;
 
 importScripts("jsbots.worker.js", "jsbots.simulator.js");
 
@@ -14,7 +14,14 @@ thomas = function(pworker, communicator) {
 		communicator.on("tick.sim", simulator.tick);
 		communicator.on("tick.robot", this.process);
 		this.aimAt(function() {return target;});
-		this.fireCharge(this.fireCondition);
+		this.fireCharge(function(others, data) {
+			var diff = Math.abs(jsbots.util.angleDiff(robot.turretAngle(), robot.currentTurretAngle()));
+			if ((target && robot.charge() > 5 && data.elapsed > lastFire + 75 && diff < 2)
+					|| robot.charge() === jsbots.consts.robotMaxCharge) {
+				lastFire = data.elapsed;
+				return {charge: 5, speed: 1};
+			}
+		});
 	}
 	
 	Thomas.prototype = jsbots.api.robot(pworker, communicator);
@@ -79,15 +86,6 @@ thomas = function(pworker, communicator) {
 			robot.mark("blue", loc.x, loc.y);
 		}
 		robot.direction(minDangerDir);
-	};
-	
-	Thomas.prototype.fireCondition = function(others, data) {
-		var diff = Math.abs(jsbots.util.angleDiff(robot.turretAngle(), robot.currentTurretAngle()));
-		if ((target && robot.charge() > 5 && data.elapsed > lastFire + 75 && diff < 2)
-				|| robot.charge() === jsbots.consts.robotMaxCharge) {
-			lastFire = data.elapsed;
-			return {charge: 5, speed: 1};
-		}
 	};
 	
 	robot = new Thomas();
