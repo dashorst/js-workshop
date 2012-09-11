@@ -43,28 +43,28 @@
 
 <section class="slide" id="overview">
 	<h2>Wat gaan we behandelen...</h2>
-	<ol>
+	<ul>
 		<li>
 			<h3>Basics</h3>
 			<p>Syntax, types, JavaScript !== Java, operators, <code>null</code>, <code>undefined</code></p>
 		</li>
 		<li>
-			<h3>Functies</h3>
-			<p>Referenties, closures, scope</p>
-		</li>
-		<li>
-			<h3>Objecten</h3>
+			<h3>Objects</h3>
 			<p>Properties, arrays</p>
 		</li>
 		<li>
-			<h3><code>this</code></h3>
-			<p>Functie calls, <code>call</code>, <code>apply</code></p>
+			<h3>Functions</h3>
+			<p>Referenties, closures, scope</p>
 		</li>
 		<li>
 			<h3>Prototype inheritance</h3>
-			<p>Constructor functies, <code>prototype</code>, <code>new</code></p>
+			<p>Constructor functions, <code>prototype</code>, <code>new</code></p>
 		</li>
-	</ol>
+		<li>
+			<h3>Function calls</h3>
+			<p><code>this</code>, <code>call</code>, <code>apply</code></p>
+		</li>
+	</ul>
 </section>
 
 <section class="slide" id="basics-title">
@@ -73,7 +73,7 @@
 
 <section class="slide" id="basics-syntax">
 	<h2>Syntax</h2>
-	<p>C-style syntax, <code>var</code> maakt een variabele, <code>function</code> een functie.</p>
+	<p>C-style syntax, <code>var</code> maakt een variabele, <code>function</code> een function.</p>
 	<div class="code" mode="javascript" style="display: none;">function objectValues(obj) {
    var cur, ret = [];
    for (cur in obj) {
@@ -100,7 +100,7 @@
 	<h2>Operators</h2>
 	<p>Vergelijkbaar met Java operators, maar unsafe</p>
 	
-	<ol>
+	<ul>
 		<li>
 			<h3><code>+</code></h3>
 			Optellen <strong>of</strong> concatenatie (<code>3+4===7</code>, <code>'3'+4==='34'</code>)
@@ -116,7 +116,7 @@
 			doen wat <code>==</code> en <code>!=</code> hadden moeten doen,
 			typed comparison (<code>"a"==="a"</code>, <code>"4"!==4</code>)
 		</li>
-	</ol>
+	</ul>
 </section>
 
 <section class="slide" id="basics-types">
@@ -130,8 +130,8 @@ var str = "value"; /* of 'value' */</div>
 </section>
 
 <section class="slide" id="basics-array">
-	<h2>Array</h2>
-	<ol>
+	<h2>Arrays</h2>
+	<ul>
 		<li>
 			<h3>List-like Objects</h3>
 			JavaScript arrays hebben geen vaste lengte
@@ -148,11 +148,11 @@ var str = "value"; /* of 'value' */</div>
 			<h3>Methodes die niet in IE werken</h3>
 			<code>filter</code>, <code>forEach</code>, <code>indexOf</code>, <code>map</code>
 		</li>
-	</ol>
+	</ul>
 </section>
 
 <section class="slide" id="basics-array-example">
-	<h2>Array voorbeeld</h2>
+	<h2>Arrays</h2>
 	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var arr = [1,2,3];
 console.log(arr);
 console.log(arr[1], arr.indexOf(2));
@@ -164,7 +164,7 @@ console.log(arr.map(function(v){return v*2;}));</textarea>
 
 <section class="slide" id="basics-null-undefined">
 	<h2><code>null</code> en <code>undefined</code></h2>
-	<ol>
+	<ul>
 		<li>
 			<h3><code>undefined</code></h3>
 			<p>Een type, geen waarde (<code>undefined = 'defined'; /* nu is undefined defined */</code>).</p>
@@ -181,32 +181,32 @@ console.log(arr.map(function(v){return v*2;}));</textarea>
 			<p>Veel gebruikte manier van checken: <code>!x === true</code> en <code>!!x === false</code>
 			voor zowel <code>null</code> als <code>undefined</code>.</p> 
 		</li>
-	</ol>
+	</ul>
 </section>
 
 <section class="slide" id="basics-exercise">
-	<h2>Creëer een robot</h2>
+	<h2>Creëer een Robot</h2>
 	<div style="margin-bottom: 20px">
 	<div class="code" mode="javascript" style="display: none;">var jsbots, importScripts, myrobot;
 
 importScripts("jsbots.worker.js");
 
 myrobot = function(pworker, communicator) {
-	var robot;
+   var robot;
 	
-	function MyRobot() {
-		communicator.on("tick.robot", this.process);
-	}
-	
-	MyRobot.prototype = jsbots.api.robot(pworker, communicator);
-	
-	MyRobot.prototype.ai = function(others, data) {
-		robot.speed(10);
-		robot.direction(robot.direction() + 5);
-	};
-	
-	robot = new MyRobot();
-	return robot;
+   function MyRobot() {
+      communicator.on("tick.robot", this.process);
+   }
+
+   MyRobot.prototype = jsbots.api.robot(pworker, communicator);
+
+   MyRobot.prototype.ai = function(others, data) {
+      robot.speed(10);
+      robot.direction(robot.direction() + 5);
+   };
+
+   robot = new MyRobot();
+   return robot;
 }
 
 jsbots.api.communicator(this).robotConstructor(myrobot);</div>
@@ -217,33 +217,33 @@ engine.addRobot("robotnaam", "limegreen");</div></div>
 </section>
 
 <section class="slide" id="functions-title">
-	<h1>Functies</h1>
+	<h1>Functions</h1>
 </section>
 
 <section class="slide" id="functions-overview">
-	<h2>Functies</h2>
-	<ol>
+	<h2>Functions</h2>
+	<ul>
 		<li>
 			<h3>First-class citizen</h3>
-			Functies kunnen aan variabelen geassigned worden, meegegeven worden aan andere
-			functies of geretouneerd worden.
+			Functions kunnen aan variabelen geassigned worden, meegegeven worden aan andere
+			functions of geretouneerd worden.
 		</li>
 		
 		<li>
 			<h3>Scope</h3>
-			Functies bepalen scope, dus niet de { ... } 
+			Functions bepalen scope, dus niet de { ... } 
 		</li>
 
 		<li>
 			<h3>Closure</h3>
-			Functies kunnen bij de scope waar ze in staan, ook als de functies buiten deze
-			scope aangeroepen worden			
+			Functions kunnen bij de scope waar ze in staan, ook als de functions buiten deze
+			scope aangeroepen worden
 		</li>
-	</ol>
+	</ul>
 </section>
 
 <section class="slide" id="functions-first-class">
-	<h2>Functies als First-class citizen</h2>
+	<h2>Functions als First-class citizen</h2>
 	<div style="margin-bottom: 20px">
 	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var arr = [5, 4, 30, 22, -2, 15, -6, -30];
 console.log(arr.sort());</textarea>
@@ -257,7 +257,7 @@ console.log(arr.sort(comp));</textarea></div>
 </section>
 
 <section class="slide" id="functions-as-objects">
-	<h2>Functies zijn objecten</h2>
+	<h2>Functions zijn Objects</h2>
 	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var comp = function(a, b) {
    return a - b;
 };
@@ -268,28 +268,28 @@ console.log(comp.toString());</textarea>
 </section>
 
 <section class="slide" id="functions-scope">
-	<h2>Functies bepalen scope</h2>
-	<ol>
+	<h2>Functions bepalen scope</h2>
+	<ul>
 		<li>
-			<h3>Alleen functies bepalen scope</h3>
+			<h3>Alleen functions bepalen scope</h3>
 			Accolades en haakjes dus niet. Binnen bijvoorbeeld een <code>if</code> geldt dezelfde scope als er buiten.
 		</li>
 		
 		<li>
-			<h3>Buiten functies geldt de global scope</h3>
+			<h3>Buiten functions geldt de global scope</h3>
 			Dit is in principe <code>window</code>. Het gebruik van de global scope is gevaarlijk vanwege mogelijke conflicten. 
 		</li>
 
 		<li>
 			<h3>Locatie is niet belangrijk</h3>
 			Een <code>var</code> of <code>function</code> kan gebruikt worden voor hij gedeclareerd is.
-			Daarom: zet alle vars vooraan je functie.			
+			Daarom: zet alle vars vooraan je function.			
 		</li>
-	</ol>
+	</ul>
 </section>
 
 <section class="slide" id="functions-scope-example">
-	<h2>Functies bepalen scope</h2>
+	<h2>Functions bepalen scope</h2>
 	<textarea class="code" mode="javascript" runnable="true" style="display: none;">function top(x) {
    var a = 3;
    console.log(a, b, x);
@@ -352,17 +352,17 @@ console.log(kleinerDan3(5), kleinerDan3(2));</textarea>
 </section>
 
 <section class="slide" id="prototype-constructors">
-	<h2>Constructor functies</h2>
-	<ol>
+	<h2>Constructor Functions</h2>
+	<ul>
 		<li>
-			<h3>Normale functie, aangeroepen met <code>new</code></h3>
+			<h3>Normale function, aangeroepen met <code>new</code></h3>
 			Conventie is om de naam met een hoofdletter te schrijven
 		</li>
 		
 		<li>
-			<h3>Maakt een nieuwe instance van de functie</h3>
+			<h3>Maakt een nieuwe instance van de function</h3>
 		</li>
-	</ol>
+	</ul>
 	
 	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var klaas, piet;
 function Persoon(naam) {
@@ -375,18 +375,18 @@ console.log(klaas, piet);</textarea>
 </section>
 
 <section class="slide" id="prototype-property">
-	<h2>Functie prototypes</h2>
-	<ol>
+	<h2>Function Prototypes</h2>
+	<ul>
 		<li>
 			<h3>Bepaalt het prototype van het object</h3>
-			M.a.w. de properties en functies die het object bepalen
+			M.a.w. de properties en functions die het object bepalen
 		</li>
 		
 		<li>
 			<h3>Aanpasbaar via de <code>prototype</code> property</h3>
 			Dit is een property van de constructor function
 		</li>
-	</ol>
+	</ul>
 	
 	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var klaas, piet;
 function Persoon(naam) { this.naam = naam; }
@@ -402,8 +402,8 @@ piet.praat("world!");</textarea>
 </section>
 
 <section class="slide" id="prototype-chain">
-	<h2>Prototype chain</h2>
-	<ol>
+	<h2>Prototype Chain</h2>
+	<ul>
 		<li>
 			<h3><code>prototype</code> kan een ander prototype extenden</h3>
 			Assign <code>prototype</code> een <code>new</code> instance van een constructor
@@ -413,9 +413,9 @@ piet.praat("world!");</textarea>
 			<h3>Erft alle properties van het andere prototype</h3>
 			Een soort class-inheritance, maar dan anders
 		</li>
-	</ol>
+	</ul>
 	
-	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var klaas, piet;
+	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var baas;
 function Persoon(naam) { this.naam = naam; }
 Persoon.prototype.praat = function(zin) { console.log(this.naam+" zegt: "+zin); }
 
@@ -434,12 +434,12 @@ baas.kick("Piet");</textarea>
 
 <section class="slide" id="prototype-extend">
 	<h2>Extend Prototypes</h2>
-	<ol>
+	<ul>
 		<li>
 			<h3><code>prototype</code> kan ook uitgebreid worden voor bestaande instances en typen</h3>
 			Standaard typen uitbreiden wordt gezien als bad practice
 		</li>
-	</ol>
+	</ul>
 	
 	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var klaas, piet;
 function Persoon(naam) { this.naam = naam; }
@@ -457,6 +457,186 @@ console.log("klaas.praat = ", klaas.praat);
 
 klaas.praat("Hello");
 piet.praat("world!");</textarea>
+</section>
+
+<section class="slide" id="prototype-explained">
+	<h2>Prototypes Explained</h2>
+	<svg height="800" width="1200">
+		<defs>
+    		<marker id="arrow-head" markerWidth="6" markerHeight="6"
+            	orient="auto" refY="3">
+      			<path d="M0,0 L6,3 0,6" />
+    		</marker>
+    	</defs>
+    	
+		<g class="instance" transform="translate(200, 62)">
+			<circle r="60"/>
+			<text>{}</text>
+		</g>
+		<line class="prototype" x1="260" y1="62" x2="420" y2="62" />
+		<text class="link-label" transform="translate(280, 82)">__proto__</text>
+		
+		<g class="instance" transform="translate(200, 275)">
+			<circle r="60"/>
+			<text>piet</text>
+		</g>
+		<line class="prototype" x1="260" y1="275" x2="420" y2="275" />
+		<text class="link-label" transform="translate(280, 295)">__proto__</text>
+		
+		<g class="instance" transform="translate(800, 275)">
+			<circle r="60"/>
+			<text>klaas</text>
+		</g>
+		<line class="prototype" x1="740" y1="275" x2="580" y2="275" />
+		<text class="link-label" transform="translate(600, 295)">__proto__</text>
+		
+		<g class="instance" transform="translate(200, 500)">
+			<circle r="60"/>
+			<text>baas</text>
+		</g>
+		<line class="prototype" x1="260" y1="500" x2="420" y2="500" />
+		<text class="link-label" transform="translate(280, 520)">__proto__</text>
+		
+		<g class="prototype" transform="translate(500, 62)">
+			<circle r="60"/>
+			<text>
+				<tspan x="5" dy="-10">Object.</tspan>
+				<tspan x="0" dy="30">prototype</tspan>
+			</text>
+		</g>
+		
+		<line class="prototype" x1="500" y1="215" x2="500" y2="142" />
+		<g class="prototype" transform="translate(500, 275)">
+			<circle r="60"/>
+			<text>
+				<tspan x="5" dy="-10">Persoon.</tspan>
+				<tspan x="0" dy="30">prototype</tspan>
+			</text>
+		</g>
+		
+		<line class="prototype" x1="500" y1="440" x2="500" y2="355" />
+		<g class="prototype" transform="translate(500, 500)">
+			<circle r="60"/>
+			<text>
+				<tspan x="5" dy="-10">Boss.</tspan>
+				<tspan x="0" dy="30">prototype</tspan>
+			</text>
+		</g>
+		
+		<line class="prototype" x1="800" y1="450" x2="560" y2="325" />
+		<g class="constructor" transform="translate(800, 450)">
+			<circle r="60"/>
+			<text>Persoon</text>
+		</g>
+		
+		<line class="prototype" x1="800" y1="625" x2="573" y2="530" />
+		<g class="constructor" transform="translate(800, 625)">
+			<circle r="60"/>
+			<text>Boss</text>
+		</g>
+		
+		<g class="property" transform="translate(570, 32)">
+			<line x1="-15" y1="3" x2="70" y2="3"></line>
+			<text>toString</text>
+		</g>
+		<g class="property" transform="translate(570, 245)">
+			<line x1="-15" y1="3" x2="70" y2="3"></line>
+			<text>praat</text>
+		</g>
+		<g class="property" transform="translate(570, 470)">
+			<line x1="-15" y1="3" x2="70" y2="3"></line>
+			<text>kick</text>
+		</g>
+		<g class="property" transform="translate(576, 490)">
+			<line x1="-15" y1="3" x2="70" y2="3"></line>
+			<text>naam = boss</text>
+		</g>
+		<g class="property" transform="translate(270, 245)">
+			<line x1="-15" y1="3" x2="70" y2="3"></line>
+			<text>naam = piet</text>
+		</g>
+		<g class="property" transform="translate(870, 245)">
+			<line x1="-15" y1="3" x2="70" y2="3"></line>
+			<text>naam = klaas</text>
+		</g>
+	</svg>
+</section>
+
+<section class="slide" id="prototype-robot">
+	<h2>Robot Revisited</h2>
+	<div class="code" mode="javascript" style="display: none;">var jsbots, importScripts, myrobot;
+
+importScripts("jsbots.worker.js");
+
+myrobot = function(pworker, communicator) {
+   var robot;
+	
+   function MyRobot() {
+      communicator.on("tick.robot", this.process);
+   }
+
+   MyRobot.prototype = jsbots.api.robot(pworker, communicator);
+
+   MyRobot.prototype.ai = function(others, data) {
+      robot.speed(10);
+      robot.direction(robot.direction() + 5);
+   };
+
+   robot = new MyRobot();
+   return robot;
+}
+
+jsbots.api.communicator(this).robotConstructor(myrobot);</div>
+</section>
+
+<section class="slide" id="prototype-exercise">
+	<h2>Geen idee</h2>
+	<div class="code" mode="javascript" style="display: none;">hier moet iets</div>
+</section>
+
+<section class="slide" id="calls-title">
+	<h1>Function calls</h1>
+</section>
+
+<section class="slide" id="calls-this">
+	<h2><code>this</code></h2>
+	<ul>
+		<li>
+			<h3><code>this</code> wijst naar het object waar de function op aangeroepen wordt</h3>
+			Bij global functions zal dit <code>window</code> zijn
+		</li>
+	</ul>
+	
+	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var obj;
+	
+obj = { foo : "bar" };
+obj.functie = function() {console.log(this);};
+obj.functie();</textarea>
+</section>
+
+<section class="slide" id="calls-call-apply">
+	<h2><code>call</code> en <code>apply</code></h2>
+	<ul>
+		<li>
+			<h3>Met <code>call</code> en <code>apply</code> kan <code>this</code> aangepast worden</h3>
+			Dit wordt ook veel gebruikt voor callbacks en events
+		</li>
+		<li>
+			<h3>Properties van een function</h3>
+			Zoals eerder gezegd: functions zijn ook objecten
+		</li>
+		<li>
+			<h3><code>apply</code> pakt een array, <code>call</code> niet</h3>
+			Hierdoor is <code>apply</code> vooral handig om alle <code>arguments</code> door te geven
+		</li>
+	</ul>
+	
+	<textarea class="code" mode="javascript" runnable="true" style="display: none;">var obj1, obj2;
+	
+obj1 = { name : "object-1" };
+obj2 = { name : "object-2" };
+obj1.functie = function() {console.log(this);};
+obj1.functie.call(obj2);</textarea>
 </section>
 
 

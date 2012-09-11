@@ -14,3 +14,52 @@
 .on-slide-basics-also-java-highlight .also-in-java {
 	color: green!important;
 }
+
+.property text {
+	fill: black;
+	font-size: 20px;
+}
+.property line {
+	stroke: #a6daff;
+	stroke-width: 2;
+}
+
+.instance circle {
+	fill: #d9db56;
+}
+.constructor circle {
+	fill: #ffcc00;
+}
+.prototype circle {
+	fill: #a6daff;
+}
+.instance circle,
+.constructor circle,
+.prototype circle {
+	stroke-width: 3px;
+	stroke: #333333;
+}
+
+.instance text,
+.constructor text,
+.prototype text {
+	font-size: 26px;
+	fill: black;
+	text-anchor: middle;
+	dominant-baseline: central;
+}
+
+text.link-label {
+	fill: black;
+	dominant-baseline: central;
+}
+
+marker path {
+	fill:black
+}
+line.prototype {
+	stroke:black;
+	stroke-width:3;
+	marker-end:url(#arrow-head);
+}
+​
